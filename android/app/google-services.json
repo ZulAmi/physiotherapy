@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "472117524364",
+    "project_id": "physioflow-aee68",
+    "storage_bucket": "physioflow-aee68.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:472117524364:android:ef745fb5811b6ef36a08a9",
+        "android_client_info": {
+          "package_name": "com.example.physioflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6WflbmcDhScCdRCNdMyTBdUfCzq50qN4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
