@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/patient_provider.dart';
 import '../models/patient_model.dart';
-import '../../shared/widgets/custom_text_field.dart';
+import '../../shared/widgets/email_field.dart';
+import '../../shared/widgets/phone_field.dart';
+import '../../shared/widgets/numeric_field.dart';
 import '../../shared/widgets/date_picker_field.dart';
+import '../../shared/widgets/custom_text_field.dart';
+import '../../shared/utils/validation_utils.dart';
 
 class AddPatientScreen extends StatefulWidget {
   final bool isQuickAdd;
@@ -26,6 +30,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   final _conditionController = TextEditingController();
   final _diagnosisController = TextEditingController();
   final _notesController = TextEditingController();
+  final _ageController = TextEditingController();
   DateTime? _dateOfBirth;
   List<String> _medications = [];
   bool _isLoading = false;
@@ -82,35 +87,33 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
               controller: _nameController,
               label: 'Full Name',
               icon: Icons.person,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter patient name';
-                }
-                return null;
-              },
+              isRequired: true,
             ),
             const SizedBox(height: 16),
             DatePickerField(
               label: 'Date of Birth',
               selectedDate: _dateOfBirth,
-              onDateSelected: (date) {
-                setState(() => _dateOfBirth = date);
-              },
+              onDateSelected: (date) => setState(() => _dateOfBirth = date),
+              isRequired: true,
+              validator: ValidationUtils.validateDateOfBirth,
             ),
             const SizedBox(height: 16),
-            CustomTextField(
+            EmailField(
               controller: _emailController,
-              label: 'Email',
-              icon: Icons.email,
-              keyboardType: TextInputType.emailAddress,
-              validator: _validateEmail,
+              isRequired: true,
             ),
             const SizedBox(height: 16),
-            CustomTextField(
+            PhoneField(
               controller: _phoneController,
-              label: 'Phone Number',
-              icon: Icons.phone,
-              keyboardType: TextInputType.phone,
+              isRequired: true,
+            ),
+            const SizedBox(height: 16),
+            NumericField(
+              controller: _ageController,
+              label: 'Age',
+              isRequired: true,
+              minValue: 0,
+              maxValue: 120,
             ),
           ],
         ),
@@ -295,6 +298,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
     _conditionController.dispose();
     _diagnosisController.dispose();
     _notesController.dispose();
+    _ageController.dispose();
     super.dispose();
   }
 }
