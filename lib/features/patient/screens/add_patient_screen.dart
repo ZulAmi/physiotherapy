@@ -8,6 +8,7 @@ import '../../shared/widgets/numeric_field.dart';
 import '../../shared/widgets/date_picker_field.dart';
 import '../../shared/widgets/custom_text_field.dart';
 import '../../shared/utils/validation_utils.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class AddPatientScreen extends StatefulWidget {
   final bool isQuickAdd;

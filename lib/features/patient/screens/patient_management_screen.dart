@@ -4,6 +4,8 @@ import '../providers/patient_provider.dart';
 import '../widgets/patient_list_view.dart';
 import '../widgets/patient_filter_bar.dart';
 import '../widgets/add_patient_fab.dart';
+import '../../patient/models/patient_model.dart';
+import '../../auth/providers/auth_provider.dart';
 
 class PatientManagementScreen extends StatefulWidget {
   const PatientManagementScreen({super.key});

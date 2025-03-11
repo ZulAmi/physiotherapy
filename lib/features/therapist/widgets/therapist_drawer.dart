@@ -14,12 +14,12 @@ class TherapistDrawer extends StatelessWidget {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(user.name ?? 'Doctor'),
+            accountName: Text(user.displayName ?? 'Doctor'),
             accountEmail: Text(user.email),
             currentAccountPicture: CircleAvatar(
               backgroundColor: Colors.white,
               child: Text(
-                (user.name?[0] ?? 'D').toUpperCase(),
+                (user.displayName?[0] ?? 'D').toUpperCase(),
                 style: const TextStyle(fontSize: 24),
               ),
             ),

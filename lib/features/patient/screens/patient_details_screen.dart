@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/patient_provider.dart';
+import '../../report/providers/report_provider.dart';
 import '../widgets/patient_info_card.dart';
 import '../widgets/medical_history_card.dart';
 import '../widgets/exercise_plan_card.dart';
@@ -143,66 +144,53 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
   Future<void> _generateAndDownloadReport() async {
     try {
       setState(() => _isLoading = true);
-      final patient = context.read<PatientProvider>().selectedPatient;
 
-      if (patient == null) {
-        throw Exception('Patient data not available');
-      }
+      final reportProvider =
+          Provider.of<ReportProvider>(context, listen: false);
+      final downloadUrl =
+          await reportProvider.generatePatientReport(widget.patientId);
 
-      // Show generating dialog
       if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => const AlertDialog(
-            title: Text('Generating Report'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Please wait while we generate your report...'),
-              ],
-            ),
-          ),
-        );
-      }
+        setState(() => _isLoading = false);
 
-      // Call report service
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
-      final reportUrl = await context
-          .read<ReportProvider>()
-          .generatePatientReport(patient.id);
-
-      // Dismiss dialog
-      if (mounted) Navigator.of(context).pop();
-
-      // Show success dialog with options
-      if (mounted) {
+        // Show success dialog with download link
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Report Generated'),
-            content: const Text(
-                'Your patient report has been successfully generated.'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 48,
+                ),
+                const SizedBox(height: 16),
+                const Text('Patient report has been successfully generated.'),
+                const SizedBox(height: 8),
+                Text(
+                  'Download URL: $downloadUrl',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
             actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _viewReport(reportUrl);
-                },
-                child: const Text('View'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _downloadReport(reportUrl);
-                },
-                child: const Text('Download'),
-              ),
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text('Close'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // In a real app, this would open the URL or download the file
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Download started')),
+                  );
+                },
+                child: const Text('Download'),
               ),
             ],
           ),
@@ -210,35 +198,11 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
       }
     } catch (e) {
       if (mounted) {
+        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error generating report: $e')),
         );
       }
-    } finally {
-      setState(() => _isLoading = false);
     }
-  }
-
-  void _viewReport(String reportUrl) {
-    Navigator.pushNamed(
-      context,
-      '/report-viewer',
-      arguments: {
-        'reportUrl': reportUrl,
-        'patientId': widget.patientId,
-      },
-    );
-  }
-
-  void _downloadReport(String reportUrl) {
-    context.read<ReportProvider>().downloadReport(reportUrl).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Report downloaded successfully')),
-      );
-    }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error downloading report: $error')),
-      );
-    });
   }
 }

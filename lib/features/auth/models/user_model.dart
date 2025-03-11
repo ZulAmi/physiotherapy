@@ -1,36 +1,37 @@
-enum UserRole { patient, therapist, admin }
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserModel {
+enum UserRole { therapist, admin, patient, assistant }
+
+class AppUser {
   final String id;
   final String email;
-  final String? name;
+  final String? displayName;
   final UserRole role;
-  final String? specialization;
-  final String? licenseNumber;
-  final List<String>? patientIds;
+  final String? photoUrl;
+  final DateTime? createdAt;
+  final Map<String, dynamic>? metadata;
 
-  UserModel({
+  const AppUser({
     required this.id,
     required this.email,
-    this.name,
+    this.displayName,
     required this.role,
-    this.specialization,
-    this.licenseNumber,
-    this.patientIds,
+    this.photoUrl,
+    this.createdAt,
+    this.metadata,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'],
-      email: json['email'],
-      name: json['name'],
-      role: UserRole.values.firstWhere(
-        (role) => role.toString() == json['role'],
-        orElse: () => UserRole.patient,
-      ),
-      specialization: json['specialization'],
-      licenseNumber: json['licenseNumber'],
-      patientIds: List<String>.from(json['patientIds'] ?? []),
+  factory AppUser.fromJson(Map<String, dynamic> json) {
+    return AppUser(
+      id: json['id'] as String,
+      email: json['email'] as String,
+      displayName: json['displayName'] as String?,
+      role: _parseUserRole(json['role'] as String?),
+      photoUrl: json['photoUrl'] as String?,
+      createdAt: json['createdAt'] != null
+          ? (json['createdAt'] as Timestamp).toDate()
+          : null,
+      metadata: json['metadata'] as Map<String, dynamic>?,
     );
   }
 
@@ -38,11 +39,51 @@ class UserModel {
     return {
       'id': id,
       'email': email,
-      'name': name,
-      'role': role.toString(),
-      'specialization': specialization,
-      'licenseNumber': licenseNumber,
-      'patientIds': patientIds,
+      'displayName': displayName,
+      'role': role.toString().split('.').last,
+      'photoUrl': photoUrl,
+      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'metadata': metadata,
     };
   }
+
+  static UserRole _parseUserRole(String? role) {
+    if (role == null) return UserRole.therapist;
+
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return UserRole.admin;
+      case 'patient':
+        return UserRole.patient;
+      case 'assistant':
+        return UserRole.assistant;
+      case 'therapist':
+      default:
+        return UserRole.therapist;
+    }
+  }
+
+  AppUser copyWith({
+    String? id,
+    String? email,
+    String? displayName,
+    UserRole? role,
+    String? photoUrl,
+    DateTime? createdAt,
+    Map<String, dynamic>? metadata,
+  }) {
+    return AppUser(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      role: role ?? this.role,
+      photoUrl: photoUrl ?? this.photoUrl,
+      createdAt: createdAt ?? this.createdAt,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+
+  bool get isAdmin => role == UserRole.admin;
+  bool get isTherapist => role == UserRole.therapist || role == UserRole.admin;
+  bool get isPatient => role == UserRole.patient;
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/exercise/providers/exercise_provider.dart';
 import 'features/patient/providers/patient_provider.dart';
+import 'features/therapist/providers/therapist_provider.dart';
 import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -26,6 +27,10 @@ class PhysioFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PatientProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (_) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (_) => ExerciseProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => TherapistProvider()),
       ],
       child: MaterialApp(
         title: 'PhysioFlow',

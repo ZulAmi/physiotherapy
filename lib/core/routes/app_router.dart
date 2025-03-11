@@ -13,11 +13,12 @@ import '../enums/user_role.dart';
 import './route_guard.dart';
 
 class AppRouter {
-  static const String splash = '/';
+  // Route constants
+  static const String splash = '/splash';
   static const String login = '/login';
-  static const String therapistDashboard = '/therapist-dashboard';
-  static const String patientDashboard = '/patient-dashboard';
-  static const String therapistRegistration = '/therapist-registration';
+  static const String therapistDashboard = '/therapist/dashboard';
+  static const String patientDashboard = '/patient/dashboard';
+  static const String assistantDashboard = '/assistant/dashboard';
 
   // Patient management routes
   static const String patientManagement = '/patient-management';
