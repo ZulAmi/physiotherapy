@@ -1,152 +1,101 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../auth/models/user_model.dart';
 
 class Therapist extends AppUser {
-  final String? specialization;
-  final String? phone;
-  final String? address;
+  final String specialization;
+  final String phone;
+  final String licenseNumber;
   final String? biography;
-  final String? licenseNumber;
-  final String? education;
-  final List<String>? certifications;
-  final int? experienceYears;
-  final bool active;
-  final Map<String, dynamic>? schedule;
+  final bool active; // Add this field if not already present
 
-  const Therapist({
-    required super.id,
-    required super.email,
-    required super.displayName,
-    super.role = UserRole.therapist,
-    super.photoUrl,
-    super.createdAt,
-    super.metadata,
-    this.specialization,
-    this.phone,
-    this.address,
+  Therapist({
+    required String id,
+    required String email,
+    required String? displayName,
+    required this.specialization,
+    required this.phone,
+    required this.licenseNumber,
     this.biography,
-    this.licenseNumber,
-    this.education,
-    this.certifications,
-    this.experienceYears,
-    this.active = true,
-    this.schedule,
-  });
+    this.active = true, // Default to active
+  }) : super(
+          id: id,
+          email: email,
+          displayName: displayName,
+          role: UserRole.therapist,
+        );
 
-  factory Therapist.fromJson(Map<String, dynamic> json) {
-    return Therapist(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      displayName: json['displayName'] as String? ?? '',
-      role: _parseUserRole(json['role'] as String?),
-      photoUrl: json['photoUrl'] as String?,
-      createdAt: json['createdAt'] != null
-          ? (json['createdAt'] as Timestamp).toDate()
-          : null,
-      metadata: json['metadata'] as Map<String, dynamic>?,
-      specialization: json['specialization'] as String?,
-      phone: json['phone'] as String?,
-      address: json['address'] as String?,
-      biography: json['biography'] as String?,
-      licenseNumber: json['licenseNumber'] as String?,
-      education: json['education'] as String?,
-      certifications: json['certifications'] != null
-          ? List<String>.from(json['certifications'])
-          : null,
-      experienceYears: json['experienceYears'] as int?,
-      active: json['active'] as bool? ?? true,
-      schedule: json['schedule'] as Map<String, dynamic>?,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'specialization': specialization,
-      'phone': phone,
-      'address': address,
-      'biography': biography,
-      'licenseNumber': licenseNumber,
-      'education': education,
-      'certifications': certifications,
-      'experienceYears': experienceYears,
-      'active': active,
-      'schedule': schedule,
-    };
-  }
-
-  static UserRole _parseUserRole(String? role) {
-    if (role == null) return UserRole.therapist;
-
-    switch (role.toLowerCase()) {
-      case 'admin':
-        return UserRole.admin;
-      case 'patient':
-        return UserRole.patient;
-      case 'assistant':
-        return UserRole.assistant;
-      case 'therapist':
-      default:
-        return UserRole.therapist;
-    }
-  }
-
-  Therapist copyWith({
-    String? id,
-    String? email,
-    String? displayName,
-    UserRole? role,
-    String? photoUrl,
-    DateTime? createdAt,
-    Map<String, dynamic>? metadata,
-    String? specialization,
-    String? phone,
-    String? address,
-    String? biography,
-    String? licenseNumber,
-    String? education,
-    List<String>? certifications,
-    int? experienceYears,
-    bool? active,
-    Map<String, dynamic>? schedule,
-  }) {
-    return Therapist(
-      id: id ?? this.id,
-      email: email ?? this.email,
-      displayName: displayName ?? this.displayName,
-      role: role ?? this.role,
-      photoUrl: photoUrl ?? this.photoUrl,
-      createdAt: createdAt ?? this.createdAt,
-      metadata: metadata ?? this.metadata,
-      specialization: specialization ?? this.specialization,
-      phone: phone ?? this.phone,
-      address: address ?? this.address,
-      biography: biography ?? this.biography,
-      licenseNumber: licenseNumber ?? this.licenseNumber,
-      education: education ?? this.education,
-      certifications: certifications ?? this.certifications,
-      experienceYears: experienceYears ?? this.experienceYears,
-      active: active ?? this.active,
-      schedule: schedule ?? this.schedule,
-    );
-  }
-
-  // Factory for creating a new therapist with minimal info
+  // Factory constructor for creating new therapists (pre-registration)
   factory Therapist.create({
     required String email,
     required String displayName,
-    String? specialization,
-    String? phone,
-    String? licenseNumber,
+    required String specialization,
+    required String phone,
+    required String licenseNumber,
+    String? biography,
   }) {
     return Therapist(
-      id: '', // Will be set during registration
+      id: '', // ID will be assigned after registration
       email: email,
       displayName: displayName,
       specialization: specialization,
       phone: phone,
       licenseNumber: licenseNumber,
+      biography: biography,
     );
+  }
+
+  // Add this copyWith method
+  @override
+  Therapist copyWith({
+    String? id,
+    String? email,
+    String? displayName,
+    DateTime? createdAt,
+    Map<String, dynamic>? metadata,
+    String? photoUrl,
+    UserRole? role,
+    String? specialization,
+    String? phone,
+    String? licenseNumber,
+    String? biography,
+    bool? active,
+  }) {
+    return Therapist(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      displayName: displayName ?? this.displayName,
+      specialization: specialization ?? this.specialization,
+      phone: phone ?? this.phone,
+      licenseNumber: licenseNumber ?? this.licenseNumber,
+      biography: biography ?? this.biography,
+      active: active ?? this.active,
+    );
+  }
+
+  // Create Therapist from JSON (for fetching from database)
+  factory Therapist.fromJson(Map<String, dynamic> json) {
+    return Therapist(
+      id: json['id'] ?? '',
+      email: json['email'] ?? '',
+      displayName: json['displayName'],
+      specialization: json['specialization'] ?? '',
+      phone: json['phone'] ?? '',
+      licenseNumber: json['licenseNumber'] ?? '',
+      biography: json['biography'],
+      active: json['active'] ?? true, // Default to true if not specified
+    );
+  }
+
+  // Convert to JSON for storing in database
+  @override
+  Map<String, dynamic> toJson() {
+    final baseJson = super.toJson(); // Get base user properties
+    return {
+      ...baseJson,
+      'specialization': specialization,
+      'phone': phone,
+      'licenseNumber': licenseNumber,
+      if (biography != null) 'biography': biography,
+      'active': active,
+    };
   }
 }

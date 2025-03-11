@@ -48,6 +48,22 @@ class PoseDetectionService {
     return await _poseDetector.processImage(inputImage);
   }
 
+  Future<List<Pose>> detectPose(CameraImage image) async {
+    try {
+      // Convert CameraImage to format required by ML model
+      final inputImage = convertToInputImage(image);
+
+      // Process image through pose detection model (likely TensorFlow Lite or ML Kit)
+      final List<Pose> detectedPoses =
+          await _poseDetector.processImage(inputImage);
+
+      return detectedPoses;
+    } catch (e) {
+      debugPrint('Error detecting pose: $e');
+      return [];
+    }
+  }
+
   Uint8List _concatenatePlanes(List<Plane> planes) {
     final WriteBuffer allBytes = WriteBuffer();
     for (final plane in planes) {

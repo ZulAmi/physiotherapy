@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import '../models/therapist_model.dart';
+import '../../auth/models/user_model.dart';
 
 class TherapistProvider with ChangeNotifier {
+  final firebase_auth.FirebaseAuth _firebaseAuth =
+      firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   List<Therapist> _therapists = [];
   bool _isLoading = false;
@@ -38,54 +40,35 @@ class TherapistProvider with ChangeNotifier {
   }
 
   // Register a new therapist (creates both auth and Firestore entries)
-  Future<Therapist> registerTherapist(
-      Therapist therapist, String password) async {
+  Future<void> registerTherapist(Therapist therapist, String password) async {
     _setLoading(true);
+    _clearError();
+
     try {
-      // Create Firebase Auth user
-      final userCredential = await _auth.createUserWithEmailAndPassword(
+      // 1. Create auth user
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: therapist.email,
         password: password,
       );
 
-      // Generate user ID from Firebase Auth
-      final userId = userCredential.user!.uid;
-
-      // Update display name
+      // 2. Update display name
       await userCredential.user!.updateDisplayName(therapist.displayName);
 
-      // Prepare therapist data for Firestore
-      final therapistData = {
-        ...therapist.toJson(),
-        'id': userId,
-        'role': 'therapist',
+      // 3. Create user document with therapist-specific data
+      await _firestore.collection('users').doc(userCredential.user!.uid).set({
+        'displayName': therapist.displayName,
+        'email': therapist.email,
+        'role': UserRole.therapist.toString().split('.').last,
+        'specialization': therapist.specialization,
+        'phone': therapist.phone,
+        'licenseNumber': therapist.licenseNumber,
+        if (therapist.biography != null && therapist.biography!.isNotEmpty)
+          'biography': therapist.biography,
         'createdAt': FieldValue.serverTimestamp(),
-        'active': true,
-      };
-
-      // Create therapist document in Firestore
-      await _firestore.collection('users').doc(userId).set(therapistData);
-
-      // Create a new Therapist object with the Firebase user ID
-      final newTherapist = Therapist.fromJson({'id': userId, ...therapistData});
-
-      // Add to local list
-      _therapists.add(newTherapist);
-      // Sort with null safety handling
-      _therapists.sort((a, b) {
-        // Handle null cases first
-        if (a.displayName == null && b.displayName == null) return 0;
-        if (a.displayName == null) return -1;
-        if (b.displayName == null) return 1;
-        // Normal string comparison when both values are non-null
-        return a.displayName!.compareTo(b.displayName!);
       });
-
-      notifyListeners();
-      return newTherapist;
     } catch (e) {
-      _handleAuthError(e);
-      throw Exception('Failed to register therapist: $_error');
+      _setError('Failed to register therapist: $e');
+      rethrow;
     } finally {
       _setLoading(false);
     }
@@ -152,27 +135,6 @@ class TherapistProvider with ChangeNotifier {
     }
   }
 
-  // Helper method to handle authentication errors
-  void _handleAuthError(dynamic e) {
-    if (e is FirebaseAuthException) {
-      switch (e.code) {
-        case 'email-already-in-use':
-          _setError('This email is already registered.');
-          break;
-        case 'weak-password':
-          _setError('Password is too weak.');
-          break;
-        case 'invalid-email':
-          _setError('Invalid email address format.');
-          break;
-        default:
-          _setError('Authentication error: ${e.message}');
-      }
-    } else {
-      _setError('Error: $e');
-    }
-  }
-
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -180,6 +142,11 @@ class TherapistProvider with ChangeNotifier {
 
   void _setError(String? errorMessage) {
     _error = errorMessage;
+    notifyListeners();
+  }
+
+  void _clearError() {
+    _error = null;
     notifyListeners();
   }
 

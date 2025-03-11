@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/models/user_model.dart';
 import '../providers/therapist_provider.dart';
+import '../models/therapist_model.dart';
 import '../../shared/widgets/email_field.dart';
 import '../../shared/widgets/phone_field.dart';
 import '../../shared/widgets/custom_text_field.dart';
-import '../../therapist/screens/therapist_registration_screen.dart';
 
 class TherapistRegistrationScreen extends StatefulWidget {
   const TherapistRegistrationScreen({super.key});
@@ -80,6 +81,7 @@ class _TherapistRegistrationScreenState
         specialization: _specializationController.text.trim(),
         phone: _phoneController.text.trim(),
         licenseNumber: _licenseController.text.trim(),
+        biography: _biographyController.text.trim(), // Add this line
       );
 
       // Register the therapist

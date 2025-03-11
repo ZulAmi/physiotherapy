@@ -99,12 +99,11 @@ class _ExerciseCameraScreenState extends State<ExerciseCameraScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder:
-              (context) => ExerciseCompletionScreen(
-                exercise: widget.exercise,
-                accuracy: _currentAccuracy,
-                duration: _exerciseTimer.elapsed,
-              ),
+          builder: (context) => ExerciseCompletionScreen(
+            exercise: widget.exercise,
+            accuracy: _currentAccuracy,
+            duration: _exerciseTimer.elapsed,
+          ),
         ),
       );
     }

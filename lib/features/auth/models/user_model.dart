@@ -23,9 +23,9 @@ class AppUser {
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
     return AppUser(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      displayName: json['displayName'] as String?,
+      id: json['id'] ?? '',
+      email: json['email'] ?? '',
+      displayName: json['displayName'],
       role: _parseUserRole(json['role'] as String?),
       photoUrl: json['photoUrl'] as String?,
       createdAt: json['createdAt'] != null

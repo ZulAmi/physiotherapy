@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../auth/extensions/user_extensions.dart';
 import '../widgets/therapist_drawer.dart';
 import '../widgets/stats_card.dart';
 import '../widgets/appointment_list_tile.dart';
@@ -10,7 +11,35 @@ class TherapistDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<AuthProvider>().user!;
+    final authProvider = context.watch<AuthProvider>();
+
+    // Handle loading and error states properly
+    if (authProvider.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Safety check for user
+    final user = authProvider.user;
+    if (user == null) {
+      // This should be unlikely since route guards should prevent this
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Session expired'),
+              ElevatedButton(
+                onPressed: () =>
+                    Navigator.of(context).pushReplacementNamed('/login'),
+                child: const Text('Return to Login'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +59,7 @@ class TherapistDashboard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome back, Dr. ${user.name}',
+              'Welcome back, ${user.formalName}',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 24),
