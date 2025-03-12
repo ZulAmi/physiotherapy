@@ -9,6 +9,7 @@ import '../../features/patient/screens/add_patient_screen.dart';
 import '../../features/patient/screens/patient_details_screen.dart';
 import '../../features/patient/screens/edit_patient_screen.dart';
 import '../../features/appointment/screens/appointment_booking_screen.dart';
+import '../../features/auth/screens/admin_registration_screen.dart';
 import '../enums/user_role.dart';
 import './route_guard.dart';
 
@@ -20,6 +21,7 @@ class AppRouter {
   static const String patientDashboard = '/patient/dashboard';
   static const String assistantDashboard = '/assistant/dashboard';
   static const String therapistRegistration = '/therapist/registration';
+  static const String adminRegistration = '/admin/registration';
 
   // Patient management routes
   static const String patientManagement = '/patient-management';
@@ -59,6 +61,10 @@ class AppRouter {
             child: const TherapistRegistrationScreen(),
           ),
         );
+
+      case adminRegistration:
+        return MaterialPageRoute(
+            builder: (_) => const AdminRegistrationScreen());
 
       // Patient management routes
       case patientManagement:
