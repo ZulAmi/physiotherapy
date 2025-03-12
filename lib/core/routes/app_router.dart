@@ -19,6 +19,7 @@ class AppRouter {
   static const String therapistDashboard = '/therapist/dashboard';
   static const String patientDashboard = '/patient/dashboard';
   static const String assistantDashboard = '/assistant/dashboard';
+  static const String therapistRegistration = '/therapist/registration';
 
   // Patient management routes
   static const String patientManagement = '/patient-management';

@@ -8,21 +8,16 @@ import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'core/services/firebase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const PhysioFlowApp());
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-}
 
-class PhysioFlowApp extends StatelessWidget {
-  const PhysioFlowApp({super.key});
+  // Initialize Firebase first
+  await FirebaseService.initialize();
 
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  runApp(
+    MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PatientProvider()),
@@ -32,13 +27,22 @@ class PhysioFlowApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TherapistProvider()),
       ],
-      child: MaterialApp(
-        title: 'PhysioFlow',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: AppRouter.splash,
-      ),
+      child: const PhysioFlowApp(),
+    ),
+  );
+}
+
+class PhysioFlowApp extends StatelessWidget {
+  const PhysioFlowApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'PhysioFlow',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      initialRoute: AppRouter.splash,
     );
   }
 }
