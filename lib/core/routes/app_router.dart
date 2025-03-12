@@ -10,6 +10,8 @@ import '../../features/patient/screens/patient_details_screen.dart';
 import '../../features/patient/screens/edit_patient_screen.dart';
 import '../../features/appointment/screens/appointment_booking_screen.dart';
 import '../../features/auth/screens/admin_registration_screen.dart';
+import '../../features/website/screens/landing_page.dart';
+import '../../features/admin/screens/admin_dashboard.dart';
 import '../enums/user_role.dart';
 import './route_guard.dart';
 
@@ -22,6 +24,8 @@ class AppRouter {
   static const String assistantDashboard = '/assistant/dashboard';
   static const String therapistRegistration = '/therapist/registration';
   static const String adminRegistration = '/admin/registration';
+  static const String landingPage = '/';
+  static const String adminDashboard = '/admin/dashboard';
 
   // Patient management routes
   static const String patientManagement = '/patient-management';
@@ -65,6 +69,9 @@ class AppRouter {
       case adminRegistration:
         return MaterialPageRoute(
             builder: (_) => const AdminRegistrationScreen());
+
+      case landingPage:
+        return MaterialPageRoute(builder: (_) => const LandingPage());
 
       // Patient management routes
       case patientManagement:
@@ -125,6 +132,15 @@ class AppRouter {
               patientId: patientId,
               existingAppointment: existingAppointment,
             ),
+          ),
+        );
+
+      case adminDashboard:
+        return MaterialPageRoute(
+          builder: (_) => RouteGuard(
+            requiredRole: UserRole.admin,
+            routeName: settings.name!,
+            child: const AdminDashboard(),
           ),
         );
 

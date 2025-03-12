@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../models/patient_model.dart';
 
 class MedicalHistoryCard extends StatefulWidget {

@@ -33,7 +33,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
   final _notesController = TextEditingController();
   final _ageController = TextEditingController();
   DateTime? _dateOfBirth;
-  List<String> _medications = [];
+  final List<String> _medications = [];
   bool _isLoading = false;
 
   @override

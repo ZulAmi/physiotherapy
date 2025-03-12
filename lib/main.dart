@@ -6,8 +6,6 @@ import 'features/patient/providers/patient_provider.dart';
 import 'features/therapist/providers/therapist_provider.dart';
 import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'core/services/firebase_service.dart';
 
 void main() async {
@@ -22,9 +20,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PatientProvider()),
         ChangeNotifierProvider(create: (_) => ExerciseProvider()),
-        ChangeNotifierProvider(create: (_) => ExerciseProvider()),
-        ChangeNotifierProvider(create: (_) => ExerciseProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TherapistProvider()),
       ],
       child: const PhysioFlowApp(),
@@ -42,7 +37,7 @@ class PhysioFlowApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: AppRouter.splash,
+      initialRoute: AppRouter.landingPage, // Change to landingPage
     );
   }
 }

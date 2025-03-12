@@ -6,7 +6,7 @@ class ExerciseProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Exercise> _prescribedExercises = [];
   List<Exercise> _exercises = [];
-  Map<String, List<Exercise>> _patientExercises = {};
+  final Map<String, List<Exercise>> _patientExercises = {};
   bool _isLoading = false;
   String? _error;
 

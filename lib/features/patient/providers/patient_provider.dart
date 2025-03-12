@@ -138,7 +138,7 @@ class PatientProvider with ChangeNotifier {
       final snapshot = await _firestore
           .collection('patients')
           .where('name', isGreaterThanOrEqualTo: query)
-          .where('name', isLessThan: query + 'z')
+          .where('name', isLessThan: '${query}z')
           .get();
 
       return snapshot.docs

@@ -5,7 +5,6 @@ import '../models/patient_model.dart';
 import '../../shared/widgets/email_field.dart';
 import '../../shared/widgets/phone_field.dart';
 import '../../shared/widgets/custom_text_field.dart';
-import '../../shared/utils/validation_utils.dart';
 
 class EditPatientScreen extends StatefulWidget {
   final String patientId;

@@ -8,18 +8,15 @@ class Therapist extends AppUser {
   final bool active; // Add this field if not already present
 
   Therapist({
-    required String id,
-    required String email,
-    required String? displayName,
+    required super.id,
+    required super.email,
+    required super.displayName,
     required this.specialization,
     required this.phone,
     required this.licenseNumber,
     this.biography,
     this.active = true, // Default to active
   }) : super(
-          id: id,
-          email: email,
-          displayName: displayName,
           role: UserRole.therapist,
         );
 
