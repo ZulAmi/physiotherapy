@@ -12,6 +12,8 @@ import '../../features/appointment/screens/appointment_booking_screen.dart';
 import '../../features/auth/screens/admin_registration_screen.dart';
 import '../../features/website/screens/landing_page.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
+import '../../features/exercise/models/exercise_model.dart'; // Add this import
+import '../../features/exercise/screens/exercise_monitoring_screen.dart'; // Add this import
 import '../enums/user_role.dart';
 import './route_guard.dart';
 
@@ -26,6 +28,7 @@ class AppRouter {
   static const String adminRegistration = '/admin/registration';
   static const String landingPage = '/';
   static const String adminDashboard = '/admin/dashboard';
+  static const String exerciseMonitoring = '/exercise/monitoring';
 
   // Patient management routes
   static const String patientManagement = '/patient-management';
@@ -142,6 +145,13 @@ class AppRouter {
             routeName: settings.name!,
             child: const AdminDashboard(),
           ),
+        );
+
+      case exerciseMonitoring:
+        final args = settings.arguments as Map<String, dynamic>;
+        final exercise = args['exercise'] as Exercise;
+        return MaterialPageRoute(
+          builder: (_) => ExerciseMonitoringScreen(exercise: exercise),
         );
 
       default:
