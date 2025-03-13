@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
+import 'dart:math' as math; // Use dart:math instead
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:mediapipe_pose/mediapipe_pose.dart';
 import '../models/exercise_model.dart';
-import '../utils/pose_landmark_type.dart';
 
 enum ExerciseFormQuality { good, needsImprovement, poor, unknown }
 
@@ -37,6 +36,9 @@ class ExerciseAssistantAI {
   Exercise? _referenceExercise;
   final FlutterTts _flutterTts = FlutterTts();
 
+  // Add getters to access private fields
+  CameraController? get cameraController => _cameraController;
+
   Timer? _feedbackTimer;
   final StreamController<ExerciseFeedback> _feedbackStreamController =
       StreamController<ExerciseFeedback>.broadcast();
@@ -50,14 +52,13 @@ class ExerciseAssistantAI {
     if (_isInitialized) return;
 
     try {
-      // Initialize pose detector using Google ML Kit
-      _poseDetector = GoogleMlKit.vision.poseDetector(
-        options: PoseDetectorOptions(
-          mode: PoseDetectionMode.stream,
-          model: PoseDetectionModel.accurate,
-          enableClassification: true,
-        ),
+      // Fix the pose detector initialization
+      final options = PoseDetectorOptions(
+        mode: PoseDetectionMode.stream,
+        model: PoseDetectionModel.base,
+        // enableClassification is not available in the latest API
       );
+      _poseDetector = PoseDetector(options: options);
 
       // Initialize text to speech
       await _flutterTts.setLanguage("en-US");
@@ -158,16 +159,14 @@ class ExerciseAssistantAI {
     final Map<String, double> angles = {};
 
     try {
-      // Google ML Kit uses a different structure - we need to adapt
       final landmarks = pose.landmarks;
 
-      // Map ML Kit landmarks to the format your code expects
+      // Fix the PoseLandmarkType reference by using the ML Kit version
       final leftShoulder = landmarks[PoseLandmarkType.leftShoulder];
       final leftElbow = landmarks[PoseLandmarkType.leftElbow];
       final leftWrist = landmarks[PoseLandmarkType.leftWrist];
 
       if (leftShoulder != null && leftElbow != null && leftWrist != null) {
-        // Calculate angle between shoulder-elbow-wrist
         final angle = _calculateAngle(
           leftShoulder.x,
           leftShoulder.y,
@@ -179,7 +178,7 @@ class ExerciseAssistantAI {
         angles['leftElbow'] = angle;
       }
 
-      // Calculate other important joint angles...
+      // Calculate other joint angles...
     } catch (e) {
       debugPrint('Error calculating joint angles: $e');
     }
@@ -196,9 +195,10 @@ class ExerciseAssistantAI {
     double p3x,
     double p3y,
   ) {
+    // Fix Math references with dart:math
     final radians =
-        Math.atan2(p3y - p2y, p3x - p2x) - Math.atan2(p1y - p2y, p1x - p2x);
-    var angle = radians * 180 / Math.pi;
+        math.atan2(p3y - p2y, p3x - p2x) - math.atan2(p1y - p2y, p1x - p2x);
+    var angle = radians * 180 / math.pi;
 
     if (angle < 0) {
       angle += 360;
@@ -237,7 +237,7 @@ class ExerciseAssistantAI {
     double confidenceScore = 0;
     if (comparedAngles > 0) {
       final avgDeviation = totalDeviation / comparedAngles;
-      confidenceScore = Math.max(0, 100 - avgDeviation);
+      confidenceScore = math.max(0, 100 - avgDeviation);
     }
 
     // Determine quality based on confidence

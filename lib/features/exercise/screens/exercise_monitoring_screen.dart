@@ -91,15 +91,15 @@ class _ExerciseMonitoringScreenState extends State<ExerciseMonitoringScreen> {
   }
 
   Widget _buildCameraPreview() {
-    if (_exerciseAI._cameraController == null ||
-        !_exerciseAI._cameraController!.value.isInitialized) {
+    if (_exerciseAI.cameraController == null ||
+        !_exerciseAI.cameraController!.value.isInitialized) {
       return const Center(child: Text('Initializing camera...'));
     }
 
     return Stack(
       fit: StackFit.expand,
       children: [
-        CameraPreview(_exerciseAI._cameraController!),
+        CameraPreview(_exerciseAI.cameraController!),
         // Overlay to show pose landmarks (in a real implementation)
         StreamBuilder<ExerciseFeedback>(
           stream: _exerciseAI.feedbackStream,

@@ -161,21 +161,33 @@ class ExerciseProvider with ChangeNotifier {
 
       // Step 2: Add or update exercises
       for (final exercise in exercises) {
-        // Default prescription values if not specified
-        final prescription = exercise.defaultPrescription ??
-            {
-              'sets': 3,
-              'reps': 10,
-              'frequency': 'Daily',
-            };
+        final Map<String, dynamic> prescriptionData;
+
+        // Handle both ExercisePrescription object or fallback Map
+        if (exercise.defaultPrescription != null) {
+          final prescription = exercise.defaultPrescription!;
+          prescriptionData = {
+            'sets': prescription.sets,
+            'reps': prescription.reps,
+            'duration': prescription.duration.inSeconds,
+            'notes': prescription.notes,
+          };
+        } else {
+          prescriptionData = {
+            'sets': 3,
+            'reps': 10,
+            'frequency': 'Daily',
+            'duration': 0,
+            'notes': '',
+          };
+        }
 
         // Add or update this exercise assignment
         batch.set(
           exercisesCollectionRef.doc(exercise.id),
           {
             'assignedAt': FieldValue.serverTimestamp(),
-            ...prescription,
-            'notes': '', // Optional notes for this patient's exercise
+            ...prescriptionData, // Now we can safely spread the Map
           },
           SetOptions(merge: true), // Update existing fields without overwriting
         );

@@ -20,7 +20,8 @@ class Exercise {
   final String videoUrl;
   final List<String> targetMuscles;
   final ExerciseComplexity complexity;
-  final Map<String, dynamic>? aiReferenceData; // Add AI reference data
+  final Map<String, dynamic>? aiReferenceData;
+  final ExercisePrescription? defaultPrescription;
 
   Exercise({
     required this.id,
@@ -31,6 +32,7 @@ class Exercise {
     required this.targetMuscles,
     required this.complexity,
     this.aiReferenceData,
+    this.defaultPrescription,
   });
 
   // Add methods to access AI reference data
@@ -61,6 +63,10 @@ class Exercise {
         orElse: () => ExerciseComplexity.beginner,
       ),
       aiReferenceData: json['aiReferenceData'] as Map<String, dynamic>?,
+      defaultPrescription: json['defaultPrescription'] != null
+          ? ExercisePrescription.fromJson(
+              json['defaultPrescription'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -74,6 +80,7 @@ class Exercise {
       'targetMuscles': targetMuscles,
       'complexity': complexity.toString().split('.').last,
       'aiReferenceData': aiReferenceData,
+      'defaultPrescription': defaultPrescription?.toJson(),
     };
   }
 
@@ -86,6 +93,7 @@ class Exercise {
     List<String>? targetMuscles,
     ExerciseComplexity? complexity,
     Map<String, dynamic>? aiReferenceData,
+    ExercisePrescription? defaultPrescription,
   }) {
     return Exercise(
       id: id ?? this.id,
@@ -96,7 +104,40 @@ class Exercise {
       targetMuscles: targetMuscles ?? this.targetMuscles,
       complexity: complexity ?? this.complexity,
       aiReferenceData: aiReferenceData ?? this.aiReferenceData,
+      defaultPrescription: defaultPrescription ?? this.defaultPrescription,
     );
+  }
+}
+
+class ExercisePrescription {
+  final int sets;
+  final int reps;
+  final Duration duration;
+  final String notes;
+
+  ExercisePrescription({
+    this.sets = 3,
+    this.reps = 10,
+    this.duration = const Duration(seconds: 0),
+    this.notes = '',
+  });
+
+  factory ExercisePrescription.fromJson(Map<String, dynamic> json) {
+    return ExercisePrescription(
+      sets: json['sets'] as int? ?? 3,
+      reps: json['reps'] as int? ?? 10,
+      duration: Duration(seconds: json['duration'] as int? ?? 0),
+      notes: json['notes'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sets': sets,
+      'reps': reps,
+      'duration': duration.inSeconds,
+      'notes': notes,
+    };
   }
 }
 
@@ -110,6 +151,7 @@ final List<Exercise> dummyExercises = [
     targetMuscles: ['shoulder'],
     complexity: ExerciseComplexity.beginner,
     aiReferenceData: null,
+    defaultPrescription: ExercisePrescription(sets: 3, reps: 10),
   ),
   Exercise(
     id: '2',
@@ -120,5 +162,6 @@ final List<Exercise> dummyExercises = [
     targetMuscles: ['knee'],
     complexity: ExerciseComplexity.beginner,
     aiReferenceData: null,
+    defaultPrescription: ExercisePrescription(sets: 3, reps: 10),
   ),
 ];

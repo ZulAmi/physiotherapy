@@ -47,15 +47,16 @@ class _ContactPageState extends State<ContactPage> {
           setState(() {
             _isSubmitting = false;
           });
-          
+
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Thank you for your message! We\'ll get back to you soon.'),
+              content: Text(
+                  'Thank you for your message! We\'ll get back to you soon.'),
               backgroundColor: Color(0xFF2E7D32),
             ),
           );
-          
+
           // Clear form
           _nameController.clear();
           _emailController.clear();
@@ -130,7 +131,7 @@ class _ContactPageState extends State<ContactPage> {
                         ),
                         const SizedBox(height: 24),
                         const Text(
-                          'We'd love to hear from you. Here's how you can reach us.',
+                          "We'd love to hear from you. Here's how you can reach us.",
                           style: TextStyle(
                             fontSize: 16,
                             height: 1.6,
@@ -138,7 +139,7 @@ class _ContactPageState extends State<ContactPage> {
                           ),
                         ),
                         const SizedBox(height: 40),
-                        
+
                         // Contact details
                         _buildContactDetail(
                           icon: Icons.email_outlined,
@@ -146,22 +147,23 @@ class _ContactPageState extends State<ContactPage> {
                           detail: 'contact@physioflow.com',
                         ),
                         const SizedBox(height: 24),
-                        
+
                         _buildContactDetail(
                           icon: Icons.phone_outlined,
                           title: 'Call Us',
                           detail: '+1 (800) 123-4567',
                         ),
                         const SizedBox(height: 24),
-                        
+
                         _buildContactDetail(
                           icon: Icons.location_on_outlined,
                           title: 'Visit Us',
-                          detail: '123 Innovation Drive, Suite 400\nSan Francisco, CA 94107',
+                          detail:
+                              '123 Innovation Drive, Suite 400\nSan Francisco, CA 94107',
                         ),
-                        
+
                         const SizedBox(height: 40),
-                        
+
                         // Office Hours
                         const Text(
                           'Office Hours',
@@ -172,15 +174,16 @@ class _ContactPageState extends State<ContactPage> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
-                        _buildOfficeHours('Monday - Friday', '9:00 AM - 6:00 PM EST'),
+
+                        _buildOfficeHours(
+                            'Monday - Friday', '9:00 AM - 6:00 PM EST'),
                         const SizedBox(height: 8),
                         _buildOfficeHours('Saturday', '10:00 AM - 2:00 PM EST'),
                         const SizedBox(height: 8),
                         _buildOfficeHours('Sunday', 'Closed'),
-                        
+
                         const SizedBox(height: 40),
-                        
+
                         // Map placeholder
                         Container(
                           height: 200,
@@ -199,9 +202,9 @@ class _ContactPageState extends State<ContactPage> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(width: 64),
-                  
+
                   // Right side - Contact Form
                   Expanded(
                     child: Container(
@@ -231,7 +234,7 @@ class _ContactPageState extends State<ContactPage> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            
+
                             // Name field
                             TextFormField(
                               controller: _nameController,
@@ -248,7 +251,7 @@ class _ContactPageState extends State<ContactPage> {
                               },
                             ),
                             const SizedBox(height: 16),
-                            
+
                             // Email field
                             TextFormField(
                               controller: _emailController,
@@ -261,14 +264,15 @@ class _ContactPageState extends State<ContactPage> {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your email';
                                 }
-                                if (!value.contains('@') || !value.contains('.')) {
+                                if (!value.contains('@') ||
+                                    !value.contains('.')) {
                                   return 'Please enter a valid email';
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 16),
-                            
+
                             // Phone field
                             TextFormField(
                               controller: _phoneController,
@@ -279,7 +283,7 @@ class _ContactPageState extends State<ContactPage> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            
+
                             // Inquiry type dropdown
                             DropdownButtonFormField<String>(
                               value: _selectedInquiry,
@@ -301,7 +305,7 @@ class _ContactPageState extends State<ContactPage> {
                               },
                             ),
                             const SizedBox(height: 16),
-                            
+
                             // Message field
                             TextFormField(
                               controller: _messageController,
@@ -320,7 +324,7 @@ class _ContactPageState extends State<ContactPage> {
                               },
                             ),
                             const SizedBox(height: 24),
-                            
+
                             // Submit button
                             SizedBox(
                               height: 50,
@@ -377,19 +381,22 @@ class _ContactPageState extends State<ContactPage> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
-                  
+
                   // FAQ items
                   _buildFaqItem(
                     question: 'How quickly can we implement PhysioFlow?',
-                    answer: 'Most clinics are fully onboarded within 2 weeks. Our implementation team will guide you through setup, data migration, and staff training to ensure a smooth transition.',
+                    answer:
+                        'Most clinics are fully onboarded within 2 weeks. Our implementation team will guide you through setup, data migration, and staff training to ensure a smooth transition.',
                   ),
                   _buildFaqItem(
                     question: 'Is my patient data secure?',
-                    answer: 'Absolutely. PhysioFlow is HIPAA compliant and uses enterprise-grade encryption for all data. We conduct regular security audits and never share your data with third parties.',
+                    answer:
+                        'Absolutely. PhysioFlow is HIPAA compliant and uses enterprise-grade encryption for all data. We conduct regular security audits and never share your data with third parties.',
                   ),
                   _buildFaqItem(
                     question: 'Do you offer training for our staff?',
-                    answer: 'Yes! All plans include comprehensive training sessions for your team. We also provide ongoing support, tutorial videos, and a knowledge base to ensure you get the most from PhysioFlow.',
+                    answer:
+                        'Yes! All plans include comprehensive training sessions for your team. We also provide ongoing support, tutorial videos, and a knowledge base to ensure you get the most from PhysioFlow.',
                   ),
                 ],
               ),

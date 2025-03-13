@@ -94,7 +94,7 @@ class AboutPage extends StatelessWidget {
                         ),
                         SizedBox(height: 24),
                         Text(
-                          'PhysioFlow began in 2021 when our founder, Dr. Sarah Chen, recognized a significant gap in physiotherapy care. As a practicing physiotherapist for over 15 years, she observed that patients often struggled with maintaining proper form during home exercises, leading to slower recovery and occasional injuries.',
+                          'PhysioFlow began in 2021 when our founder, recognized a significant gap in physiotherapy care. As a practicing physiotherapist for over 15 years, she observed that patients often struggled with maintaining proper form during home exercises, leading to slower recovery and occasional injuries.',
                           style: TextStyle(
                             fontSize: 16,
                             height: 1.8,
@@ -103,7 +103,7 @@ class AboutPage extends StatelessWidget {
                         ),
                         SizedBox(height: 16),
                         Text(
-                          'Leveraging her medical expertise and partnering with AI specialists and software engineers, Dr. Chen developed the first prototype of PhysioFlow's AI exercise monitoring system. After successful clinical trials showing 78% improvement in patient outcomes compared to traditional methods, PhysioFlow was officially launched in 2022.',
+                          "Leveraging her medical expertise and partnering with AI specialists and software engineers, Dr. Chen developed the first prototype of PhysioFlow's AI exercise monitoring system. After successful clinical trials showing 78% improvement in patient outcomes compared to traditional methods, PhysioFlow was officially launched in 2022.",
                           style: TextStyle(
                             fontSize: 16,
                             height: 1.8,
@@ -112,7 +112,7 @@ class AboutPage extends StatelessWidget {
                         ),
                         SizedBox(height: 16),
                         Text(
-                          'Today, we're proud to serve over 200 clinics nationwide, helping thousands of patients recover faster and with better results.',
+                          "Today, we're proud to serve over 200 clinics nationwide, helping thousands of patients recover faster and with better results.",
                           style: TextStyle(
                             fontSize: 16,
                             height: 1.8,
@@ -164,32 +164,38 @@ class AboutPage extends StatelessWidget {
                         _buildValueItem(
                           icon: Icons.emoji_people,
                           title: 'Patient-Centric',
-                          description: 'We design every feature with patient outcomes as our top priority.',
+                          description:
+                              'We design every feature with patient outcomes as our top priority.',
                         ),
                         _buildValueItem(
                           icon: Icons.verified,
                           title: 'Clinical Excellence',
-                          description: 'We maintain the highest standards of medical and scientific integrity.',
+                          description:
+                              'We maintain the highest standards of medical and scientific integrity.',
                         ),
                         _buildValueItem(
                           icon: Icons.psychology,
                           title: 'Continuous Innovation',
-                          description: 'We constantly seek new ways to improve rehabilitation technology.',
+                          description:
+                              'We constantly seek new ways to improve rehabilitation technology.',
                         ),
                         _buildValueItem(
                           icon: Icons.accessibility_new,
                           title: 'Accessibility',
-                          description: 'We believe quality care should be available to everyone.',
+                          description:
+                              'We believe quality care should be available to everyone.',
                         ),
                         _buildValueItem(
                           icon: Icons.people_alt,
                           title: 'Collaborative Care',
-                          description: 'We empower the relationship between therapists and patients.',
+                          description:
+                              'We empower the relationship between therapists and patients.',
                         ),
                         _buildValueItem(
                           icon: Icons.privacy_tip,
                           title: 'Privacy & Security',
-                          description: 'We protect patient data with the highest security standards.',
+                          description:
+                              'We protect patient data with the highest security standards.',
                         ),
                       ],
                     ),
@@ -229,19 +235,22 @@ class AboutPage extends StatelessWidget {
                       _buildTeamMember(
                         name: 'Dr. Sarah Chen',
                         position: 'Founder & CEO',
-                        bio: 'Former head of physiotherapy at Metro General Hospital with 15+ years of clinical experience.',
+                        bio:
+                            'Former head of physiotherapy at Metro General Hospital with 15+ years of clinical experience.',
                       ),
                       const SizedBox(width: 40),
                       _buildTeamMember(
                         name: 'Michael Rodriguez',
                         position: 'CTO',
-                        bio: 'AI specialist with previous experience at leading tech companies developing computer vision systems.',
+                        bio:
+                            'AI specialist with previous experience at leading tech companies developing computer vision systems.',
                       ),
                       const SizedBox(width: 40),
                       _buildTeamMember(
                         name: 'Dr. James Wilson',
                         position: 'Chief Medical Officer',
-                        bio: 'Board-certified orthopedic specialist focused on evidence-based rehabilitation protocols.',
+                        bio:
+                            'Board-certified orthopedic specialist focused on evidence-based rehabilitation protocols.',
                       ),
                     ],
                   ),

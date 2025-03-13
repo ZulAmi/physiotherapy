@@ -62,8 +62,6 @@ class WebsiteFooter extends StatelessWidget {
                       children: [
                         _buildSocialIcon(Icons.facebook, onTap: () {}),
                         _buildSocialIcon(Icons.language, onTap: () {}),
-                        _buildSocialIcon(Icons.linkedin, onTap: () {}),
-                        _buildSocialIcon(Icons.twitter, onTap: () {}),
                       ],
                     ),
                   ],
