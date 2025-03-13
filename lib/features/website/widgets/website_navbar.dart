@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../core/routes/app_router.dart';
-import '../screens/features_page.dart';
-import '../screens/pricing_page.dart';
-import '../screens/about_page.dart';
-import '../screens/contact_page.dart';
-import '../screens/landing_page.dart';
 
 class WebsiteNavbar extends StatelessWidget {
   final String currentPage;
@@ -30,50 +25,30 @@ class WebsiteNavbar extends StatelessWidget {
       ),
       actions: [
         NavbarItem(
-            title: 'Home',
-            isActive: currentPage == 'home',
-            onTap: () {
-              if (currentPage != 'home') {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const LandingPage()));
-              }
-            }),
+          title: 'Home',
+          isActive: currentPage == 'home',
+          onTap: () => Navigator.pushNamed(context, AppRouter.homePage),
+        ),
         NavbarItem(
-            title: 'Features',
-            isActive: currentPage == 'features',
-            onTap: () {
-              if (currentPage != 'features') {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const FeaturesPage()));
-              }
-            }),
+          title: 'Features',
+          isActive: currentPage == 'features',
+          onTap: () => Navigator.pushNamed(context, AppRouter.featuresPage),
+        ),
         NavbarItem(
-            title: 'Pricing',
-            isActive: currentPage == 'pricing',
-            onTap: () {
-              if (currentPage != 'pricing') {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const PricingPage()));
-              }
-            }),
+          title: 'Pricing',
+          isActive: currentPage == 'pricing',
+          onTap: () => Navigator.pushNamed(context, AppRouter.pricingPage),
+        ),
         NavbarItem(
-            title: 'About',
-            isActive: currentPage == 'about',
-            onTap: () {
-              if (currentPage != 'about') {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const AboutPage()));
-              }
-            }),
+          title: 'About',
+          isActive: currentPage == 'about',
+          onTap: () => Navigator.pushNamed(context, AppRouter.aboutPage),
+        ),
         NavbarItem(
-            title: 'Contact',
-            isActive: currentPage == 'contact',
-            onTap: () {
-              if (currentPage != 'contact') {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (_) => const ContactPage()));
-              }
-            }),
+          title: 'Contact',
+          isActive: currentPage == 'contact',
+          onTap: () => Navigator.pushNamed(context, AppRouter.contactPage),
+        ),
         const SizedBox(width: 16),
         ElevatedButton(
           style: ElevatedButton.styleFrom(

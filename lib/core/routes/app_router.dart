@@ -12,8 +12,16 @@ import '../../features/appointment/screens/appointment_booking_screen.dart';
 import '../../features/auth/screens/admin_registration_screen.dart';
 import '../../features/website/screens/landing_page.dart';
 import '../../features/admin/screens/admin_dashboard.dart';
-import '../../features/exercise/models/exercise_model.dart'; // Add this import
-import '../../features/exercise/screens/exercise_monitoring_screen.dart'; // Add this import
+import '../../features/exercise/models/exercise_model.dart';
+import '../../features/exercise/screens/exercise_monitoring_screen.dart';
+
+// Import the new website pages
+import '../../features/website/screens/home_page.dart';
+import '../../features/website/screens/features_page.dart';
+import '../../features/website/screens/pricing_page.dart';
+import '../../features/website/screens/about_page.dart';
+import '../../features/website/screens/contact_page.dart';
+
 import '../enums/user_role.dart';
 import './route_guard.dart';
 
@@ -39,6 +47,13 @@ class AppRouter {
   // Appointment routes
   static const String appointmentBooking = '/appointment-booking';
   static const String appointmentList = '/appointment-list';
+
+  // Website pages routes
+  static const String homePage = '/website/home';
+  static const String featuresPage = '/website/features';
+  static const String pricingPage = '/website/pricing';
+  static const String aboutPage = '/website/about';
+  static const String contactPage = '/website/contact';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -75,6 +90,22 @@ class AppRouter {
 
       case landingPage:
         return MaterialPageRoute(builder: (_) => const LandingPage());
+
+      // Website pages
+      case homePage:
+        return MaterialPageRoute(builder: (_) => const HomePage());
+
+      case featuresPage:
+        return MaterialPageRoute(builder: (_) => const FeaturesPage());
+
+      case pricingPage:
+        return MaterialPageRoute(builder: (_) => const PricingPage());
+
+      case aboutPage:
+        return MaterialPageRoute(builder: (_) => const AboutPage());
+
+      case contactPage:
+        return MaterialPageRoute(builder: (_) => const ContactPage());
 
       // Patient management routes
       case patientManagement:
