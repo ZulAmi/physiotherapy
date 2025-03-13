@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+import '../../../core/routes/app_router.dart';
+import '../screens/features_page.dart';
+import '../screens/pricing_page.dart';
+import '../screens/about_page.dart';
+import '../screens/contact_page.dart';
+import '../screens/landing_page.dart';
+
+class WebsiteNavbar extends StatelessWidget {
+  final String currentPage;
+
+  const WebsiteNavbar({
+    super.key,
+    required this.currentPage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      title: Row(
+        children: [
+          Image.asset('assets/images/logo.png', height: 40),
+          const SizedBox(width: 8),
+          const Text('PhysioFlow',
+              style: TextStyle(
+                  color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
+        ],
+      ),
+      actions: [
+        NavbarItem(
+            title: 'Home',
+            isActive: currentPage == 'home',
+            onTap: () {
+              if (currentPage != 'home') {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const LandingPage()));
+              }
+            }),
+        NavbarItem(
+            title: 'Features',
+            isActive: currentPage == 'features',
+            onTap: () {
+              if (currentPage != 'features') {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const FeaturesPage()));
+              }
+            }),
+        NavbarItem(
+            title: 'Pricing',
+            isActive: currentPage == 'pricing',
+            onTap: () {
+              if (currentPage != 'pricing') {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const PricingPage()));
+              }
+            }),
+        NavbarItem(
+            title: 'About',
+            isActive: currentPage == 'about',
+            onTap: () {
+              if (currentPage != 'about') {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const AboutPage()));
+              }
+            }),
+        NavbarItem(
+            title: 'Contact',
+            isActive: currentPage == 'contact',
+            onTap: () {
+              if (currentPage != 'contact') {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => const ContactPage()));
+              }
+            }),
+        const SizedBox(width: 16),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF2E7D32),
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          onPressed: () => Navigator.pushNamed(context, AppRouter.login),
+          child: const Text('Sign In'),
+        ),
+        const SizedBox(width: 24),
+      ],
+    );
+  }
+}
+
+class NavbarItem extends StatelessWidget {
+  final String title;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const NavbarItem({
+    super.key,
+    required this.title,
+    required this.onTap,
+    this.isActive = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextButton(
+        onPressed: onTap,
+        style: TextButton.styleFrom(
+          foregroundColor:
+              isActive ? const Color(0xFF2E7D32) : const Color(0xFF424242),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(
+            fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+            decoration:
+                isActive ? TextDecoration.underline : TextDecoration.none,
+            decorationColor: const Color(0xFF2E7D32),
+            decorationThickness: 2,
+          ),
+        ),
+      ),
+    );
+  }
+}

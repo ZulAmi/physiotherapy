@@ -9,6 +9,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mediapipe_pose/mediapipe_pose.dart';
 import '../models/exercise_model.dart';
+import '../utils/pose_landmark_type.dart';
 
 enum ExerciseFormQuality { good, needsImprovement, poor, unknown }
 
@@ -49,16 +50,12 @@ class ExerciseAssistantAI {
     if (_isInitialized) return;
 
     try {
-      // Initialize pose detector using MediaPipe
-      _poseDetector = MediaPipePose(
-        options: PoseOptions(
-          mode: PoseMode.STREAM,
-          modelComplexity: ModelComplexity.FULL,
-          smoothLandmarks: true,
-          enableSegmentation: false,
-          smoothSegmentation: false,
-          minDetectionConfidence: 0.5,
-          minTrackingConfidence: 0.5,
+      // Initialize pose detector using Google ML Kit
+      _poseDetector = GoogleMlKit.vision.poseDetector(
+        options: PoseDetectorOptions(
+          mode: PoseDetectionMode.stream,
+          model: PoseDetectionModel.accurate,
+          enableClassification: true,
         ),
       );
 
@@ -160,11 +157,14 @@ class ExerciseAssistantAI {
   Map<String, double> _calculateJointAngles(Pose pose) {
     final Map<String, double> angles = {};
 
-    // Example: Calculate elbow angle (simplified)
     try {
-      final leftShoulder = pose.landmarks[PoseLandmarkType.leftShoulder];
-      final leftElbow = pose.landmarks[PoseLandmarkType.leftElbow];
-      final leftWrist = pose.landmarks[PoseLandmarkType.leftWrist];
+      // Google ML Kit uses a different structure - we need to adapt
+      final landmarks = pose.landmarks;
+
+      // Map ML Kit landmarks to the format your code expects
+      final leftShoulder = landmarks[PoseLandmarkType.leftShoulder];
+      final leftElbow = landmarks[PoseLandmarkType.leftElbow];
+      final leftWrist = landmarks[PoseLandmarkType.leftWrist];
 
       if (leftShoulder != null && leftElbow != null && leftWrist != null) {
         // Calculate angle between shoulder-elbow-wrist
@@ -179,9 +179,7 @@ class ExerciseAssistantAI {
         angles['leftElbow'] = angle;
       }
 
-      // Calculate other important joint angles
-      // Right elbow, knees, hips, etc.
-      // ...
+      // Calculate other important joint angles...
     } catch (e) {
       debugPrint('Error calculating joint angles: $e');
     }
