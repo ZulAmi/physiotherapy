@@ -14,14 +14,17 @@ class WebsiteNavbar extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      title: Row(
-        children: [
-          Image.asset('assets/images/logo.png', height: 40),
-          const SizedBox(width: 8),
-          const Text('PhysioFlow',
-              style: TextStyle(
-                  color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
-        ],
+      title: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, AppRouter.homePage),
+        child: Row(
+          children: [
+            Image.asset('assets/images/logo.png', height: 40),
+            const SizedBox(width: 8),
+            const Text('PhysioFlow',
+                style: TextStyle(
+                    color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
+          ],
+        ),
       ),
       actions: [
         NavbarItem(

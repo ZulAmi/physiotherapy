@@ -49,11 +49,11 @@ class AppRouter {
   static const String appointmentList = '/appointment-list';
 
   // Website pages routes
-  static const String homePage = '/website/home';
-  static const String featuresPage = '/website/features';
-  static const String pricingPage = '/website/pricing';
-  static const String aboutPage = '/website/about';
-  static const String contactPage = '/website/contact';
+  static const String homePage = '/home';
+  static const String featuresPage = '/features';
+  static const String pricingPage = '/pricing';
+  static const String aboutPage = '/about';
+  static const String contactPage = '/contact';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {

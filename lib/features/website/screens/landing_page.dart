@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../auth/screens/login_screen.dart';
+import '../widgets/website_navbar.dart';
+import '../widgets/website_footer.dart';
 import '../../../core/routes/app_router.dart';
 
 class LandingPage extends StatelessWidget {
@@ -8,38 +9,9 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          children: [
-            Image.asset('assets/images/logo.png', height: 40),
-            const SizedBox(width: 8),
-            const Text('PhysioFlow',
-                style: TextStyle(
-                    color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
-          ],
-        ),
-        actions: [
-          NavbarItem(title: 'Home', onTap: () {}),
-          NavbarItem(title: 'Features', onTap: () {}),
-          NavbarItem(title: 'Pricing', onTap: () {}),
-          NavbarItem(title: 'About', onTap: () {}),
-          NavbarItem(title: 'Contact', onTap: () {}),
-          const SizedBox(width: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2E7D32),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () => Navigator.pushNamed(context, AppRouter.login),
-            child: const Text('Sign In'),
-          ),
-          const SizedBox(width: 24),
-        ],
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: WebsiteNavbar(currentPage: 'home'),
       ),
       body: SingleChildScrollView(
         child: Column(
