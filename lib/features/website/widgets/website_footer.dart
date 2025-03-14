@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../core/routes/app_router.dart'; // Add this import
 
 class WebsiteFooter extends StatelessWidget {
   const WebsiteFooter({Key? key}) : super(key: key);
@@ -60,8 +61,12 @@ class WebsiteFooter extends StatelessWidget {
                     const SizedBox(height: 24),
                     Row(
                       children: [
-                        _buildSocialIcon(Icons.facebook, onTap: () {}),
-                        _buildSocialIcon(Icons.language, onTap: () {}),
+                        _buildSocialIcon(Icons.facebook,
+                            onTap: () => _launchSocialMedia(
+                                'https://facebook.com/physioflow')),
+                        _buildSocialIcon(Icons.language,
+                            onTap: () => _launchSocialMedia(
+                                'https://twitter.com/physioflow')),
                       ],
                     ),
                   ],
@@ -85,11 +90,21 @@ class WebsiteFooter extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    _buildFooterLink('Home', onTap: () {}),
-                    _buildFooterLink('Features', onTap: () {}),
-                    _buildFooterLink('Pricing', onTap: () {}),
-                    _buildFooterLink('About Us', onTap: () {}),
-                    _buildFooterLink('Contact', onTap: () {}),
+                    _buildFooterLink('Home',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRouter.homePage)),
+                    _buildFooterLink('Features',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.featuresPage)),
+                    _buildFooterLink('Pricing',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.pricingPage)),
+                    _buildFooterLink('About Us',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRouter.aboutPage)),
+                    _buildFooterLink('Contact',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.contactPage)),
                   ],
                 ),
               ),
@@ -109,11 +124,21 @@ class WebsiteFooter extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    _buildFooterLink('Blog', onTap: () {}),
-                    _buildFooterLink('Knowledge Base', onTap: () {}),
-                    _buildFooterLink('Research', onTap: () {}),
-                    _buildFooterLink('Case Studies', onTap: () {}),
-                    _buildFooterLink('Documentation', onTap: () {}),
+                    _buildFooterLink('Blog',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRouter.blogPage)),
+                    _buildFooterLink('Knowledge Base',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.knowledgeBasePage)),
+                    _buildFooterLink('Research',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.researchPage)),
+                    _buildFooterLink('Case Studies',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.caseStudiesPage)),
+                    _buildFooterLink('Documentation',
+                        onTap: () => Navigator.pushNamed(
+                            context, AppRouter.documentationPage)),
                   ],
                 ),
               ),
@@ -253,9 +278,15 @@ class WebsiteFooter extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              _buildLegalLink('Privacy Policy', onTap: () {}),
-              _buildLegalLink('Terms of Service', onTap: () {}),
-              _buildLegalLink('Cookie Policy', onTap: () {}),
+              _buildLegalLink('Privacy Policy',
+                  onTap: () => Navigator.pushNamed(
+                      context, AppRouter.privacyPolicyPage)),
+              _buildLegalLink('Terms of Service',
+                  onTap: () => Navigator.pushNamed(
+                      context, AppRouter.termsOfServicePage)),
+              _buildLegalLink('Cookie Policy',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRouter.cookiePolicyPage)),
             ],
           ),
         ],
@@ -315,5 +346,11 @@ class WebsiteFooter extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Add helper method for launching URLs
+  void _launchSocialMedia(String url) {
+    // You'll need to add url_launcher package for this functionality
+    // launchUrl(Uri.parse(url));
   }
 }

@@ -55,6 +55,18 @@ class AppRouter {
   static const String aboutPage = '/about';
   static const String contactPage = '/contact';
 
+  // Resource routes
+  static const String blogPage = '/blog';
+  static const String knowledgeBasePage = '/knowledge-base';
+  static const String researchPage = '/research';
+  static const String caseStudiesPage = '/case-studies';
+  static const String documentationPage = '/docs';
+
+  // Legal routes
+  static const String privacyPolicyPage = '/privacy';
+  static const String termsOfServicePage = '/terms';
+  static const String cookiePolicyPage = '/cookies';
+
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case splash:
@@ -185,12 +197,58 @@ class AppRouter {
           builder: (_) => ExerciseMonitoringScreen(exercise: exercise),
         );
 
+      case blogPage:
+      case knowledgeBasePage:
+      case researchPage:
+      case caseStudiesPage:
+      case documentationPage:
+      case privacyPolicyPage:
+      case termsOfServicePage:
+      case cookiePolicyPage:
+        // For now, return a simple placeholder page
+        return MaterialPageRoute(
+          builder: (_) => _buildPlaceholderPage(settings.name!.substring(1)),
+        );
+
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Route not found')),
-          ),
+          builder: (_) => _buildNotFoundPage(),
         );
     }
+  }
+
+  // Helper method for placeholder pages
+  static Widget _buildPlaceholderPage(String title) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title.toUpperCase()),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.construction, size: 64, color: Color(0xFF2E7D32)),
+            SizedBox(height: 16),
+            Text(
+              'Coming Soon',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'This page is under construction',
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static Widget _buildNotFoundPage() {
+    return Scaffold(
+      body: Center(
+        child: Text('Page not found'),
+      ),
+    );
   }
 }
