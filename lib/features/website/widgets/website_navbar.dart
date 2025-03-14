@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/routes/app_router.dart';
+import '../../../core/providers/language_provider.dart';
+import '../../../core/localization/app_localizations.dart';
 
-// Convert to StatefulWidget to manage language state
 class WebsiteNavbar extends StatefulWidget {
   final String currentPage;
 
@@ -15,11 +17,11 @@ class WebsiteNavbar extends StatefulWidget {
 }
 
 class _WebsiteNavbarState extends State<WebsiteNavbar> {
-  // Default language is English
-  bool _isEnglish = true;
-
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final localizations = AppLocalizations.of(context);
+
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -29,7 +31,7 @@ class _WebsiteNavbarState extends State<WebsiteNavbar> {
           children: [
             Image.asset('assets/images/logo.png', height: 40),
             const SizedBox(width: 8),
-            const Text('PhysioFlow',
+            Text(localizations.translate('app_title'),
                 style: TextStyle(
                     color: Color(0xFF2E7D32), fontWeight: FontWeight.bold)),
           ],
@@ -37,34 +39,34 @@ class _WebsiteNavbarState extends State<WebsiteNavbar> {
       ),
       actions: [
         NavbarItem(
-          title: _isEnglish ? 'Home' : 'ホーム',
+          title: localizations.translate('home'),
           isActive: widget.currentPage == 'home',
           onTap: () => Navigator.pushNamed(context, AppRouter.homePage),
         ),
         NavbarItem(
-          title: _isEnglish ? 'Features' : '機能',
+          title: localizations.translate('features'),
           isActive: widget.currentPage == 'features',
           onTap: () => Navigator.pushNamed(context, AppRouter.featuresPage),
         ),
         NavbarItem(
-          title: _isEnglish ? 'Pricing' : '料金',
+          title: localizations.translate('pricing'),
           isActive: widget.currentPage == 'pricing',
           onTap: () => Navigator.pushNamed(context, AppRouter.pricingPage),
         ),
         NavbarItem(
-          title: _isEnglish ? 'About' : '会社概要',
+          title: localizations.translate('about'),
           isActive: widget.currentPage == 'about',
           onTap: () => Navigator.pushNamed(context, AppRouter.aboutPage),
         ),
         NavbarItem(
-          title: _isEnglish ? 'Contact' : 'お問い合わせ',
+          title: localizations.translate('contact'),
           isActive: widget.currentPage == 'contact',
           onTap: () => Navigator.pushNamed(context, AppRouter.contactPage),
         ),
         const SizedBox(width: 16),
 
         // Language selector
-        _buildLanguageSelector(),
+        _buildLanguageSelector(context, languageProvider),
 
         const SizedBox(width: 16),
 
@@ -78,7 +80,7 @@ class _WebsiteNavbarState extends State<WebsiteNavbar> {
             ),
           ),
           onPressed: () => Navigator.pushNamed(context, AppRouter.login),
-          child: Text(_isEnglish ? 'Sign In' : 'ログイン'),
+          child: Text(localizations.translate('sign_in')),
         ),
         const SizedBox(width: 24),
       ],
@@ -86,24 +88,30 @@ class _WebsiteNavbarState extends State<WebsiteNavbar> {
   }
 
   // Language selector widget with flags
-  Widget _buildLanguageSelector() {
+  Widget _buildLanguageSelector(
+      BuildContext context, LanguageProvider languageProvider) {
+    final localizations = AppLocalizations.of(context);
+    final isEnglish = languageProvider.isEnglish;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: PopupMenuButton<String>(
-        tooltip: _isEnglish ? 'Change language' : '言語を変更',
+        tooltip: localizations.translate('change_language'),
         offset: const Offset(0, 40),
         icon: Row(
           children: [
             // Show current flag
-            _buildFlag(_isEnglish ? 'us' : 'jp', width: 24),
+            _buildFlag(isEnglish ? 'us' : 'jp', width: 24),
             const SizedBox(width: 4),
             Icon(Icons.arrow_drop_down, color: Colors.grey[700]),
           ],
         ),
         onSelected: (String value) {
-          setState(() {
-            _isEnglish = value == 'en';
-          });
+          if (value == 'en' && !isEnglish) {
+            languageProvider.setLocale(const Locale('en', 'US'));
+          } else if (value == 'ja' && isEnglish) {
+            languageProvider.setLocale(const Locale('ja', 'JP'));
+          }
         },
         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
           PopupMenuItem<String>(
@@ -117,7 +125,7 @@ class _WebsiteNavbarState extends State<WebsiteNavbar> {
             ),
           ),
           PopupMenuItem<String>(
-            value: 'jp',
+            value: 'ja',
             child: Row(
               children: [
                 _buildFlag('jp', width: 24),
@@ -131,14 +139,15 @@ class _WebsiteNavbarState extends State<WebsiteNavbar> {
     );
   }
 
-  // Helper to build flag image
+  // Helper to build flag image (same as before)
   Widget _buildFlag(String countryCode, {required double width}) {
+    // Same implementation as before
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
       child: Image.asset(
         'assets/images/flags/$countryCode.png',
         width: width,
-        height: width * 0.75, // Standard flag aspect ratio (4:3)
+        height: width * 0.75,
         fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) {
           return Container(
