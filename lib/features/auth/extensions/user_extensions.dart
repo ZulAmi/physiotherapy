@@ -16,7 +16,6 @@ extension UserDisplayExtension on AppUser {
       case UserRole.assistant:
         return 'Assistant $baseName';
       case UserRole.patient:
-      default:
         return baseName;
     }
   }

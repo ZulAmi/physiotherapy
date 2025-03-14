@@ -53,7 +53,7 @@ class PatientDashboardScreen extends StatelessWidget {
                               title: 'Today\'s Sessions',
                               value: '8',
                               icon: Icons.calendar_today,
-                              color: AppTheme.secondaryColor,
+                              color: AppTheme.accentColor,
                             ),
                           ),
                         ],

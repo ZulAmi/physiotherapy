@@ -202,8 +202,6 @@ class AuthProvider with ChangeNotifier {
         return '/patient/dashboard';
       case UserRole.assistant:
         return '/assistant/dashboard';
-      default:
-        return '/login';
     }
   }
 }
