@@ -14,5 +14,11 @@
     },
     "files.associations": {
         "*.yaml": "yaml"
-    }
+    },
+    "cloudcode.gke": {
+        "projectId": "your-gcp-project-id"
+    },
+    "extensions.recommendations": [
+        "GoogleCloudTools.cloudcode"
+    ]
 }
