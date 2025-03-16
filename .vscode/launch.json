@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PhysioFlow Flutter",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug"
+        },
+        {
+            "name": "Video Collection",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ml/data_collection/video_collector.py",
+            "args": [
+                "--max-videos=5"
+            ]
+        },
+        {
+            "name": "Process Frames",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ml/preprocessing/pose_processor.py",
+            "args": []
+        },
+        {
+            "name": "Train Model",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/ml/training/train_local.py",
+            "args": []
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Pipeline",
+            "configurations": [
+                "Video Collection",
+                "Process Frames",
+                "Train Model"
+            ]
+        }
+    ]
+}

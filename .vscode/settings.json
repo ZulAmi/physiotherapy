@@ -1,0 +1,18 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/ml/venv/Scripts/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/ml"
+    ],
+    "dart.flutterSdkPath": "path/to/your/flutter/sdk",
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.python"
+    },
+    "[dart]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "Dart-Code.dart-code"
+    },
+    "files.associations": {
+        "*.yaml": "yaml"
+    }
+}
