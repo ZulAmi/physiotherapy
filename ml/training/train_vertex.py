@@ -8,9 +8,11 @@ import tempfile
 import subprocess
 import shutil
 import time
+import json
 from pathlib import Path
 from google.cloud import storage, aiplatform
 from google.cloud.storage import Blob
+from google.cloud import videointelligence_v1 as videointelligence  # Add this import
 
 # Import from local modules
 import sys
@@ -33,6 +35,25 @@ class PhysioFlowMLPipeline:
         self.config_path = config_path
         self.local_data_dir = tempfile.mkdtemp(prefix="physioflow_")
         self.storage_client = storage.Client(project=project_id)
+        
+        # Landmark indices for knee and torso targeting
+        # These indices correspond to MediaPipe pose landmarks
+        self.knee_landmarks = {
+            23, 24,  # Left and right hip
+            25, 26,  # Left and right knee
+            27, 28,  # Left and right ankle
+            29, 30, 31, 32  # Foot landmarks
+        }
+        
+        self.torso_landmarks = {
+            11, 12,  # Shoulders
+            23, 24,  # Hips
+            33,      # Spine (mid)
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10  # Face and upper body landmarks
+        }
+        
+        # Combined set for knee-focused physiotherapy
+        self.target_landmarks = self.knee_landmarks.union(self.torso_landmarks)
         
         # Create bucket if it doesn't exist
         try:
@@ -137,6 +158,144 @@ class PhysioFlowMLPipeline:
                 "-loglevel", "error"
             ])
     
+    def process_video_landmarks(self, video_gcs_path, target_specific_landmarks=True):
+        """Process videos with Video Intelligence API focusing on knee and torso landmarks"""
+        print(f"Processing video with Video Intelligence API: {video_gcs_path}")
+        if target_specific_landmarks:
+            print("Targeting knee and torso landmarks for physiotherapy analysis")
+        
+        # Create Video Intelligence client
+        video_client = videointelligence.VideoIntelligenceServiceClient()
+        
+        # Configure the request
+        features = [videointelligence.Feature.PERSON_DETECTION]
+        
+        # Set up processing - adjust based on your needs
+        person_config = videointelligence.PersonDetectionConfig(
+            include_pose_landmarks=True,
+            include_bounding_boxes=False
+        )
+        
+        config = videointelligence.VideoContext(
+            person_detection_config=person_config
+        )
+        
+        # Launch the asynchronous request
+        operation = video_client.annotate_video(
+            request={
+                "features": features,
+                "input_uri": video_gcs_path,
+                "video_context": config,
+            }
+        )
+        
+        print("Processing video. This may take some time.")
+        result = operation.result(timeout=300)
+        
+        # Process and save the landmarks
+        landmarks_dir = os.path.join(self.local_data_dir, "landmarks")
+        os.makedirs(landmarks_dir, exist_ok=True)
+        
+        # Get video filename for naming the output files
+        video_filename = video_gcs_path.split('/')[-1].split('.')[0]
+        
+        # Extract landmarks from the response
+        for annotation in result.annotation_results:
+            for person_detection in annotation.person_detection_annotations:
+                for track in person_detection.tracks:
+                    # Process each frame that has pose landmarks
+                    for timestamp in track.timestamps:
+                        if timestamp.pose_landmarks:
+                            frame_time = timestamp.time_offset.seconds + timestamp.time_offset.nanos / 1e9
+                            frame_id = f"{video_filename}_frame_{int(frame_time * 1000)}"
+                            
+                            # Save landmarks to file
+                            landmarks_data = {}
+                            
+                            # For knee emphasis, we track the bounding box of knee area
+                            knee_min_x, knee_min_y = float('inf'), float('inf')
+                            knee_max_x, knee_max_y = float('-inf'), float('-inf')
+                            
+                            # First pass: find knee bounding box if targeting specific landmarks
+                            if target_specific_landmarks:
+                                for i, landmark in enumerate(timestamp.pose_landmarks):
+                                    if i in self.knee_landmarks:
+                                        knee_min_x = min(knee_min_x, landmark.x)
+                                        knee_min_y = min(knee_min_y, landmark.y)
+                                        knee_max_x = max(knee_max_x, landmark.x)
+                                        knee_max_y = max(knee_max_y, landmark.y)
+                            
+                            # Second pass: save landmarks
+                            for i, landmark in enumerate(timestamp.pose_landmarks):
+                                # If targeting specific landmarks, only save those in our target set
+                                if not target_specific_landmarks or i in self.target_landmarks:
+                                    # Additional metadata for knee landmarks to emphasize their importance
+                                    is_knee_landmark = i in self.knee_landmarks
+                                    
+                                    # For knee landmarks, calculate normalized position within knee region
+                                    if is_knee_landmark and knee_max_x > knee_min_x and knee_max_y > knee_min_y:
+                                        norm_x = (landmark.x - knee_min_x) / (knee_max_x - knee_min_x)
+                                        norm_y = (landmark.y - knee_min_y) / (knee_max_y - knee_min_y)
+                                    else:
+                                        norm_x = landmark.x
+                                        norm_y = landmark.y
+                                    
+                                    # Store more detailed data for knee landmarks
+                                    landmarks_data[str(i)] = {
+                                        "x": landmark.x,
+                                        "y": landmark.y,
+                                        "z": landmark.z if hasattr(landmark, 'z') else 0.0,
+                                        "visibility": landmark.visibility,
+                                        "normalized_x": norm_x,
+                                        "normalized_y": norm_y,
+                                        "landmark_type": "knee" if is_knee_landmark else "torso" if i in self.torso_landmarks else "other"
+                                    }
+                            
+                            # Add metadata
+                            landmarks_data["metadata"] = {
+                                "target_area": "knee_and_torso" if target_specific_landmarks else "full_body",
+                                "emphasis": "knee",
+                                "frame_time": frame_time,
+                                "video_path": video_gcs_path
+                            }
+                            
+                            # Save to file
+                            output_path = os.path.join(landmarks_dir, f"{frame_id}.json")
+                            with open(output_path, 'w') as f:
+                                json.dump(landmarks_data, f)
+        
+        return landmarks_dir
+
+    def process_video_from_gcs(self, videos_gcs_path, target_specific_landmarks=True):
+        """Process all videos from GCS using Video Intelligence API"""
+        print(f"Processing videos from {videos_gcs_path}")
+        if target_specific_landmarks:
+            print("Focusing on knee and torso landmarks for physiotherapy analysis")
+        
+        # Strip the gs:// prefix and bucket name
+        gcs_prefix = videos_gcs_path.replace(f"gs://{self.bucket_name}/", "")
+        
+        # List all video files in the GCS path
+        blobs = self.storage_client.list_blobs(
+            self.bucket_name, 
+            prefix=gcs_prefix
+        )
+        
+        # Initialize empty landmarks directory
+        landmarks_dir = os.path.join(self.local_data_dir, "landmarks")
+        os.makedirs(landmarks_dir, exist_ok=True)
+        
+        # Process each video file
+        for blob in blobs:
+            if blob.name.endswith('.mp4'):
+                video_gcs_path = f"gs://{self.bucket_name}/{blob.name}"
+                print(f"Processing video: {video_gcs_path}")
+                
+                # Use Video Intelligence API to process this video with landmark targeting
+                self.process_video_landmarks(video_gcs_path, target_specific_landmarks)
+        
+        return landmarks_dir
+
     def upload_to_gcs(self, local_dir, gcs_prefix):
         """Upload local directory to GCS bucket"""
         print(f"Uploading {local_dir} to gs://{self.bucket_name}/{gcs_prefix}")
@@ -359,25 +518,29 @@ setup(
         print("Cleaning up temporary files")
         shutil.rmtree(self.local_data_dir)
     
-    def run_pipeline(self, search_term="knee physiotherapy exercises", max_videos=10, output_dir="ml/models"):
+    def run_pipeline(self, search_term="knee physiotherapy exercises", max_videos=10, 
+               output_dir="ml/models", target_specific_landmarks=True):
         """Run the entire pipeline"""
         try:
             # Step 1: Collect videos
             video_dir = self.collect_videos(search_term, max_videos)
             
-            # Step 2: Process frames and extract landmarks
-            landmarks_dir = self.process_video_frames(video_dir)
+            # Step 2: Upload videos to GCS
+            videos_gcs_path = self.upload_to_gcs(video_dir, "data/videos")
             
-            # Step 3: Upload landmarks to GCS
+            # Step 3: Process videos with Video Intelligence API, targeting knee and torso
+            landmarks_dir = self.process_video_from_gcs(videos_gcs_path, target_specific_landmarks)
+            
+            # Step 4: Upload landmarks to GCS
             landmarks_gcs_path = self.upload_to_gcs(landmarks_dir, "data/landmarks")
             
-            # Step 4: Upload config
+            # Step 5: Upload config
             config_gcs_path = self.upload_config()
             
-            # Step 5: Train on Vertex AI
+            # Step 6: Train on Vertex AI
             model_gcs_path = self.train_on_vertex(landmarks_gcs_path, config_gcs_path)
             
-            # Step 6: Download model
+            # Step 7: Download model
             local_model_path = self.download_model(output_dir)
             
             print("\n" + "="*80)
@@ -404,6 +567,8 @@ def main():
                        help='Maximum number of videos to download')
     parser.add_argument('--output-dir', default='ml/models', 
                        help='Local directory to save the model')
+    parser.add_argument('--target-landmarks', action='store_true', default=True,
+                      help='Target knee and torso landmarks for physiotherapy analysis')
     
     args = parser.parse_args()
     
@@ -415,7 +580,7 @@ def main():
         args.config
     )
     
-    pipeline.run_pipeline(args.search, args.max_videos, args.output_dir)
+    pipeline.run_pipeline(args.search, args.max_videos, args.output_dir, args.target_landmarks)
 
 if __name__ == "__main__":
     main()

@@ -19,8 +19,11 @@ class LandingPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildHeroSection(context),
+            _buildStatisticsBar(),
             _buildFeatureHighlights(context),
+            _buildHowItWorks(),
             _buildTestimonialsSection(),
+            _buildPartnerLogos(),
             const WebsiteFooter(),
           ],
         ),
@@ -30,7 +33,7 @@ class LandingPage extends StatelessWidget {
 
   Widget _buildHeroSection(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 80),
+      padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 100),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.white, Color(0xFFE8F5E9)],
@@ -38,94 +41,128 @@ class LandingPage extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Transform Your Physical Therapy Practice',
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1B5E20),
+                height: 1.2,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 800,
+              child: const Text(
+                'PhysioFlow helps physical therapists manage patients, schedule appointments, and track treatment progress with AI-powered exercise monitoring technology.',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Color(0xFF424242),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 40),
+            Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Streamline Your Physical Therapy Practice',
-                  style: TextStyle(
-                    fontSize: 42,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B5E20),
-                    height: 1.2,
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2E7D32),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'PhysioFlow helps physical therapists manage patients, schedule appointments, and track treatment progress all in one place.',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Color(0xFF424242),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E7D32),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 16),
-                        textStyle: const TextStyle(fontSize: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        // Schedule a demo button
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Schedule a Demo'),
-                            content: const Text(
-                                'Please fill out the form and we\'ll contact you shortly.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Close'),
-                              ),
-                            ],
+                  onPressed: () {
+                    // Schedule a demo button
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Schedule a Demo'),
+                        content: const Text(
+                            'Please fill out the form and we\'ll contact you shortly.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Close'),
                           ),
-                        );
-                      },
-                      child: const Text('Schedule a Demo'),
-                    ),
-                    const SizedBox(width: 16),
-                    OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF2E7D32),
-                        side: const BorderSide(color: Color(0xFF2E7D32)),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 32, vertical: 16),
-                        textStyle: const TextStyle(fontSize: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                        ],
                       ),
-                      onPressed: () {
-                        // Learn more button
-                      },
-                      child: const Text('Learn More'),
+                    );
+                  },
+                  child: const Text('Schedule a Demo'),
+                ),
+                const SizedBox(width: 16),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF2E7D32),
+                    side: const BorderSide(color: Color(0xFF2E7D32)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, AppRouter.featuresPage);
+                  },
+                  child: const Text('Learn More'),
                 ),
               ],
             ),
-          ),
-          const SizedBox(width: 40),
-          Expanded(
-            child: Image.asset(
-              'assets/images/hero_image.png',
-              fit: BoxFit.contain,
-            ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatisticsBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      color: const Color(0xFF1B5E20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildStatItem('200+', 'Clinics'),
+          _buildStatItem('3,500+', 'Therapists'),
+          _buildStatItem('45,000+', 'Patients'),
+          _buildStatItem('92%', 'Satisfaction Rate'),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatItem(String value, String label) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white70,
+          ),
+        ),
+      ],
     );
   }
 
@@ -138,10 +175,19 @@ class LandingPage extends StatelessWidget {
           const Text(
             'Powerful Tools for Modern Physical Therapy',
             style: TextStyle(
-              fontSize: 32,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
               color: Color(0xFF1B5E20),
               height: 1.2,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Streamline your practice with our comprehensive suite of tools',
+            style: TextStyle(
+              fontSize: 18,
+              color: Color(0xFF424242),
             ),
             textAlign: TextAlign.center,
           ),
@@ -153,7 +199,7 @@ class LandingPage extends StatelessWidget {
                 icon: Icons.camera_alt,
                 title: 'AI Exercise Monitoring',
                 description:
-                    'Real-time feedback on patient form using advanced computer vision technology.',
+                    'Real-time feedback on patient form using advanced computer vision technology to ensure proper exercise execution.',
                 buttonText: 'See Demo',
                 onPressed: () => Navigator.pushNamed(
                     context, AppRouter.exerciseMonitoring,
@@ -164,7 +210,7 @@ class LandingPage extends StatelessWidget {
                 icon: Icons.insert_chart,
                 title: 'Progress Tracking',
                 description:
-                    'Track and visualize patient recovery with comprehensive analytics.',
+                    'Track and visualize patient recovery with comprehensive analytics and customizable reporting dashboards.',
                 buttonText: 'Learn More',
                 onPressed: () =>
                     Navigator.pushNamed(context, AppRouter.featuresPage),
@@ -174,15 +220,110 @@ class LandingPage extends StatelessWidget {
                 icon: Icons.calendar_today,
                 title: 'Smart Scheduling',
                 description:
-                    'Streamline appointment management with our intelligent booking system.',
+                    'Streamline appointment management with our intelligent booking system that reduces no-shows and optimizes your calendar.',
                 buttonText: 'Try It Out',
                 onPressed: () => Navigator.pushNamed(context, AppRouter.login),
               ),
             ],
           ),
-          const SizedBox(height: 64),
+          const SizedBox(height: 80),
           _buildMainCallToAction(context),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHowItWorks() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 64),
+      color: const Color(0xFFF5F5F5),
+      child: Column(
+        children: [
+          const Text(
+            'How PhysioFlow Works',
+            style: TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1B5E20),
+              height: 1.2,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 64),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProcessStep(
+                number: '01',
+                title: 'Patient Assessment',
+                description:
+                    'Record patient history and perform initial assessments with our structured templates.',
+              ),
+              _buildProcessStep(
+                number: '02',
+                title: 'Exercise Prescription',
+                description:
+                    'Create personalized treatment plans from our library of AI-ready exercises.',
+              ),
+              _buildProcessStep(
+                number: '03',
+                title: 'Progress Monitoring',
+                description:
+                    'Track recovery progress with our AI tools that analyze exercise form and improvement.',
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProcessStep({
+    required String number,
+    required String title,
+    required String description,
+  }) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2E7D32),
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: Text(
+                number,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1B5E20),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              description,
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.6,
+                color: Color(0xFF424242),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -427,6 +568,35 @@ class LandingPage extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPartnerLogos() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 64),
+      color: Colors.white,
+      child: Column(
+        children: [
+          const Text(
+            'Our Partners',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1B5E20),
+            ),
+          ),
+          const SizedBox(height: 64),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Image.asset('assets/images/partner1.png', height: 60),
+              Image.asset('assets/images/partner2.png', height: 60),
+              Image.asset('assets/images/partner3.png', height: 60),
+              Image.asset('assets/images/partner4.png', height: 60),
+            ],
+          ),
+        ],
       ),
     );
   }
