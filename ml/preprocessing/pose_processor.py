@@ -85,12 +85,9 @@ def process_all_videos(input_dir='ml/data/frames', output_dir='ml/data/landmarks
         process_frames(folder_path, output_dir)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Extract pose landmarks from video frames')
-    parser.add_argument('--input-dir', type=str, default='ml/data/frames', 
-                        help='Directory containing frame folders')
-    parser.add_argument('--output-dir', type=str, default='ml/data/landmarks', 
-                        help='Directory to save landmark data')
+    parser = argparse.ArgumentParser(description='Process video frames with MediaPipe Pose')
+    parser.add_argument('--input-dir', required=True, help='Input directory with frames')
+    parser.add_argument('--output-dir', required=True, help='Output directory for landmarks')
     args = parser.parse_args()
     
     process_all_videos(args.input_dir, args.output_dir)
-    print("Pose processing complete!")
