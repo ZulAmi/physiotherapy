@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'dart:convert';
 import '../../exercises/models/knee_exercise_type.dart';
 
 class DataCollectionScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
   final PoseDetector _poseDetector = PoseDetector(
       options: PoseDetectorOptions(
     mode: PoseDetectionMode.stream,
-    detectorType: PoseDetectorType.pose3d,
+    model: PoseDetectionModel.accurate,
   ));
 
   CameraController? _cameraController;

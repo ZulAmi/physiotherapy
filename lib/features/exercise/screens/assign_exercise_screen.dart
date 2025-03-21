@@ -227,15 +227,18 @@ class _AssignExerciseScreenState extends State<AssignExerciseScreen> {
 
     // Apply filters
     final filteredExercises = allExercises.where((exercise) {
+      // First filter: Text search matching in name or description
       bool matchesSearch = _searchQuery.isEmpty ||
           exercise.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           exercise.description
               .toLowerCase()
               .contains(_searchQuery.toLowerCase());
 
+      // Second filter: Category matching
       bool matchesCategory =
           _selectedCategory == null || exercise.category == _selectedCategory;
 
+      // Both conditions must be true for the exercise to be included
       return matchesSearch && matchesCategory;
     }).toList();
 

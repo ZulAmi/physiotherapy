@@ -2,6 +2,13 @@ import 'dart:math';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../../core/utils/vector_math.dart';
 
+enum KneeExerciseType {
+  squat,
+  lunge,
+  generic,
+  // Add other exercise types as needed
+}
+
 class BiomechanicsService {
   // Calculate knee flexion angle using hip, knee and ankle landmarks
   double calculateKneeFlexionAngle(Pose pose, bool isRightLeg) {

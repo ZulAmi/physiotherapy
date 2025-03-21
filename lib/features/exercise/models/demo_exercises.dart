@@ -9,6 +9,8 @@ class DemoExercise {
           'Raise your arm forward and up until it points to the ceiling. Lower slowly.',
       imageUrl: 'assets/images/exercises/shoulder_flexion.png',
       videoUrl: 'assets/videos/shoulder_flexion.mp4',
+      difficulty: 2, // Added required difficulty parameter
+      category: ExerciseCategory.upper,
       targetMuscles: ['Deltoid', 'Rotator Cuff'],
       complexity: ExerciseComplexity.beginner,
       aiReferenceData: {
@@ -48,8 +50,12 @@ class DemoExercise {
       description:
           'Sit on a chair and extend your knee until your leg is straight, then lower slowly.',
       imageUrl: 'assets/images/exercises/knee_extension.png',
+      videoUrl: '', // Empty string for missing video
+      difficulty: 1, // Added required difficulty parameter
+      category: ExerciseCategory.lowerBody, // Added required category parameter
       targetMuscles: ['Quadriceps'],
       complexity: ExerciseComplexity.beginner,
+      aiReferenceData: null, // No AI data available
       defaultPrescription: ExercisePrescription(
         sets: 2,
         reps: 15,
