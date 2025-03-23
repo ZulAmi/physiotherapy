@@ -1,0 +1,7 @@
+# python/llama_server/requirements.txt
+fastapi==0.103.2
+uvicorn==0.23.2
+torch>=2.0.0
+transformers>=4.33.2
+accelerate>=0.23.0
+pydantic==2.4.2

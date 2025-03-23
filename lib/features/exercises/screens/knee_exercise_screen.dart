@@ -11,6 +11,7 @@ import '../models/knee_biomechanics.dart';
 import '../services/knee_exercise_analyzer.dart';
 import '../widgets/knee_angle_visualizer.dart';
 import '../widgets/biomechanics_data_display.dart';
+import '../../llm/services/llama_service.dart';
 
 class KneeExerciseScreen extends StatefulWidget {
   final KneeExerciseType exerciseType;
@@ -32,6 +33,9 @@ class _KneeExerciseScreenState extends State<KneeExerciseScreen> {
   ));
 
   final KneeExerciseAnalyzer _exerciseAnalyzer = KneeExerciseAnalyzer();
+  final LlamaService _llamaService = LlamaService(
+    baseUrl: 'http://your-server-ip:8000', // Update with your server address
+  );
 
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
@@ -47,6 +51,9 @@ class _KneeExerciseScreenState extends State<KneeExerciseScreen> {
   int _setCount = 0;
   int _targetReps = 10;
   int _targetSets = 3;
+
+  String _aiGeneratedFeedback = '';
+  bool _isGeneratingFeedback = false;
 
   @override
   void initState() {
@@ -240,6 +247,79 @@ class _KneeExerciseScreenState extends State<KneeExerciseScreen> {
     });
   }
 
+  Future<void> _generateAIFeedback() async {
+    if (_currentBiomechanics == null) return;
+
+    setState(() {
+      _isGeneratingFeedback = true;
+    });
+
+    // Get current joint angles
+    final kneeAngle = _currentBiomechanics!.kneeAngle;
+    final hipAngle = _currentBiomechanics!.hipAngle;
+    final ankleAngle = _currentBiomechanics!.ankleAngle;
+
+    final angles = {
+      'knee': kneeAngle,
+      'hip': hipAngle,
+      'ankle': ankleAngle,
+    };
+
+    try {
+      final feedback = await _llamaService.generateFeedback(
+        widget.exerciseType.name,
+        angles,
+      );
+
+      setState(() {
+        _aiGeneratedFeedback = feedback;
+        _isGeneratingFeedback = false;
+      });
+    } catch (e) {
+      setState(() {
+        _aiGeneratedFeedback = 'Failed to generate feedback.';
+        _isGeneratingFeedback = false;
+      });
+    }
+  }
+
+  Widget _buildAIFeedback() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.auto_awesome, color: Colors.purple),
+              const SizedBox(width: 8),
+              const Text(
+                'AI Feedback',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: _isGeneratingFeedback ? null : _generateAIFeedback,
+              ),
+            ],
+          ),
+          const Divider(),
+          if (_isGeneratingFeedback)
+            const Center(child: CircularProgressIndicator())
+          else if (_aiGeneratedFeedback.isEmpty)
+            const Text('Tap refresh to generate AI feedback on your form.')
+          else
+            Text(_aiGeneratedFeedback),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -409,6 +489,9 @@ class _KneeExerciseScreenState extends State<KneeExerciseScreen> {
                       ],
                     ),
                   ),
+
+                // AI Feedback section
+                _buildAIFeedback(),
 
                 // Control buttons
                 Container(
