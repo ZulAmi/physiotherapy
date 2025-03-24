@@ -3,7 +3,7 @@
     "python.analysis.extraPaths": [
         "${workspaceFolder}/ml"
     ],
-    "dart.flutterSdkPath": "/Users/zulhilmirahmat/development/flutter",
+    "dart.flutterSdkPath": "j:\\Programming\\physioflowflutter\\flutter",
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.python"
