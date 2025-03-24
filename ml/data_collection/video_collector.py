@@ -7,6 +7,7 @@ from youtube_search import YoutubeSearch
 import json
 import os
 import argparse
+import shutil
 
 def download_videos(search_term, max_results=10, output_dir='ml/data/videos'):
     """Download videos based on search term"""
@@ -120,6 +121,63 @@ def _download_videos_fallback(self, search_term, max_videos, output_dir):
                     subprocess.run(["curl", "-L", url, "-o", output_path])
                 except Exception as e:
                     print(f"Failed to download sample video: {str(e)}")
+
+def use_local_videos(video_dir, output_dir='ml/data/videos'):
+    """Use local video files instead of downloading from YouTube
+    
+    Args:
+        video_dir: Directory containing local video files
+        output_dir: Directory to copy/link videos to for processing
+        
+    Returns:
+        Path to the output directory with prepared videos
+    """
+    print(f"Using local videos from {video_dir}")
+    
+    # Create output directory if it doesn't exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+    
+    # Get all video files from the source directory
+    video_files = [f for f in os.listdir(video_dir) 
+                   if f.lower().endswith(('.mp4', '.mov', '.avi', '.mkv'))]
+    
+    if not video_files:
+        raise ValueError(f"No video files found in {video_dir}")
+        
+    print(f"Found {len(video_files)} video files, preparing for processing...")
+    
+    # Copy or link each video to the output directory with proper naming
+    for idx, video_file in enumerate(video_files):
+        source_path = os.path.join(video_dir, video_file)
+        # Use a consistent naming pattern for further processing
+        target_filename = f"local_video_{idx+1}.mp4"
+        target_path = os.path.join(output_dir, target_filename)
+        
+        # Skip if target already exists
+        if os.path.exists(target_path):
+            print(f"Video {target_filename} already exists, skipping...")
+            continue
+        
+        print(f"Preparing {idx+1}/{len(video_files)}: {video_file} → {target_filename}")
+        
+        # Option 1: Copy the file (uses more space but safer)
+        shutil.copy2(source_path, target_path)
+        
+        # Option 2: Create a symbolic link (saves space but less portable)
+        # os.symlink(source_path, target_path) # Uncomment to use symlinks instead
+        
+        # Save basic metadata
+        metadata_file = os.path.join(output_dir, f"local_video_{idx+1}_meta.json")
+        with open(metadata_file, 'w') as f:
+            json.dump({
+                'original_filename': video_file,
+                'source_path': source_path,
+                'data_type': 'local_video'
+            }, f, indent=2)
+    
+    print(f"Prepared {len(video_files)} local videos for processing")
+    return output_dir
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Download YouTube videos for training data')

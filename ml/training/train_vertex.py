@@ -17,7 +17,7 @@ from google.cloud import videointelligence_v1 as videointelligence
 # Import from local modules
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from data_collection.video_collector import download_videos
+from data_collection.video_collector import download_videos, use_local_videos
 from preprocessing.pose_processor import process_frames, process_all_videos
 try:
     from training.train_local import load_config, build_model, load_and_prepare_data, train_model
@@ -72,24 +72,20 @@ class PhysioFlowMLPipeline:
             staging_bucket=f"gs://{self.bucket_name}"  # Add staging bucket
 )
     
-    def collect_videos(self, search_term="knee injury ACL tear physiotherapy exercise", max_videos=5):
-        """Collect videos using video_collector module"""
-        print(f"Collecting videos for: {search_term}")
+    def collect_videos(self, search_term=None, max_videos=10, local_video_dir=None):
+        """Collect videos for training - either from YouTube or local directory"""
+        print("Step 1: Collecting videos...")
         
-        # Create subdirectory for videos
-        video_dir = os.path.join(self.local_data_dir, "videos")
-        os.makedirs(video_dir, exist_ok=True)
+        if local_video_dir:
+            # Use local videos if directory is provided
+            video_dir = use_local_videos(local_video_dir, 
+                                         os.path.join(self.local_data_dir, "videos"))
+        else:
+            # Fall back to YouTube download if no local directory provided
+            video_dir = download_videos(search_term, max_videos, 
+                                        os.path.join(self.local_data_dir, "videos"))
         
-        # Use the downloaded module to get videos
-        try:
-            print(f"Downloading {max_videos} videos to {video_dir}")
-            download_videos(search_term, max_videos, output_dir=video_dir)
-            return video_dir
-        except Exception as e:
-            print(f"Error downloading videos: {str(e)}")
-            # Provide a fallback if the import fails
-            self._download_videos_fallback(search_term, max_videos, video_dir)
-            return video_dir
+        return video_dir
     
     def _download_videos_fallback(self, search_term, max_videos, output_dir):
         """Fallback implementation for video downloading"""
@@ -523,12 +519,12 @@ setup(
         print("Cleaning up temporary files")
         shutil.rmtree(self.local_data_dir)
     
-    def run_pipeline(self, search_term="knee physiotherapy exercises", max_videos=10, 
-               output_dir="ml/models", target_specific_landmarks=True):
-        """Run the entire pipeline"""
+    def run_pipeline(self, search_term=None, max_videos=10, output_dir="ml/models", 
+                target_specific_landmarks=True, local_video_dir=None):
+        """Run the entire pipeline with optional local video source"""
         try:
-            # Step 1: Collect videos
-            video_dir = self.collect_videos(search_term, max_videos)
+            # Step 1: Collect videos (local or YouTube)
+            video_dir = self.collect_videos(search_term, max_videos, local_video_dir)
             
             # Step 2: Upload videos to GCS
             videos_gcs_path = self.upload_to_gcs(video_dir, "data/videos")
@@ -574,6 +570,8 @@ def main():
                        help='Local directory to save the model')
     parser.add_argument('--target-landmarks', action='store_true', default=True,
                       help='Target knee and torso landmarks for physiotherapy analysis')
+    parser.add_argument('--local-videos', type=str, default=None,
+                      help='Path to directory containing local video files (skips YouTube download)')
     
     args = parser.parse_args()
     
@@ -585,7 +583,13 @@ def main():
         args.config
     )
     
-    pipeline.run_pipeline(args.search, args.max_videos, args.output_dir, args.target_landmarks)
+    pipeline.run_pipeline(
+        args.search, 
+        args.max_videos, 
+        args.output_dir, 
+        args.target_landmarks,
+        args.local_videos
+    )
 
 if __name__ == "__main__":
     main()

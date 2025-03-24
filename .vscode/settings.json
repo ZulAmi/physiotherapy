@@ -3,7 +3,7 @@
     "python.analysis.extraPaths": [
         "${workspaceFolder}/ml"
     ],
-    "dart.flutterSdkPath": "J:\\Programming\\physioflowflutter\\flutter",
+    "dart.flutterSdkPath": "/Users/zulhilmirahmat/development/flutter",
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "ms-python.python"
@@ -16,7 +16,7 @@
         "*.yaml": "yaml"
     },
     "cloudcode.gke": {
-        "projectId": "your-gcp-project-id"
+        "projectId": "meta-plateau-454701-f6"
     },
     "extensions.recommendations": [
         "GoogleCloudTools.cloudcode"
