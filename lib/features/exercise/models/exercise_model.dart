@@ -1,7 +1,7 @@
 enum ExerciseCategory {
   rehabilitation,
   lowerBody,
-  upperBody, // Make sure this value exists
+  upperBody,
   core,
   strength,
   flexibility,
@@ -13,6 +13,66 @@ enum ExerciseCategory {
 
 enum ExerciseComplexity { beginner, intermediate, advanced }
 
+// Added for MediaPipe analysis
+enum PoseJoint {
+  leftShoulder,
+  rightShoulder,
+  leftElbow,
+  rightElbow,
+  leftWrist,
+  rightWrist,
+  leftHip,
+  rightHip,
+  leftKnee,
+  rightKnee,
+  leftAnkle,
+  rightAnkle,
+}
+
+// Added for MediaPipe analysis
+class JointAngleReference {
+  final PoseJoint joint;
+  final double minAngle;
+  final double maxAngle;
+  final String feedbackTooLow;
+  final String feedbackTooHigh;
+  final String feedbackCorrect;
+
+  JointAngleReference({
+    required this.joint,
+    required this.minAngle,
+    required this.maxAngle,
+    this.feedbackTooLow = "Increase angle",
+    this.feedbackTooHigh = "Decrease angle",
+    this.feedbackCorrect = "Good form",
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'joint': joint.toString().split('.').last,
+      'minAngle': minAngle,
+      'maxAngle': maxAngle,
+      'feedbackTooLow': feedbackTooLow,
+      'feedbackTooHigh': feedbackTooHigh,
+      'feedbackCorrect': feedbackCorrect,
+    };
+  }
+
+  factory JointAngleReference.fromJson(Map<String, dynamic> json) {
+    return JointAngleReference(
+      joint: PoseJoint.values.firstWhere(
+        (e) => e.toString().split('.').last == json['joint'],
+        orElse: () => PoseJoint.leftKnee,
+      ),
+      minAngle: (json['minAngle'] as num).toDouble(),
+      maxAngle: (json['maxAngle'] as num).toDouble(),
+      feedbackTooLow: json['feedbackTooLow'] ?? "Increase angle",
+      feedbackTooHigh: json['feedbackTooHigh'] ?? "Decrease angle",
+      feedbackCorrect: json['feedbackCorrect'] ?? "Good form",
+    );
+  }
+}
+
 class Exercise {
   final String id;
   final String name;
@@ -23,7 +83,10 @@ class Exercise {
   final ExerciseCategory category;
   final List<String> targetMuscles;
   final ExerciseComplexity complexity;
-  final Map<String, dynamic>? aiReferenceData;
+
+  // Updated to use MediaPipe reference data instead of AI
+  final List<JointAngleReference>? jointAngles;
+
   final ExercisePrescription? defaultPrescription;
 
   Exercise({
@@ -36,44 +99,76 @@ class Exercise {
     required this.category,
     required this.targetMuscles,
     required this.complexity,
-    this.aiReferenceData,
+    this.jointAngles,
     this.defaultPrescription,
   });
 
-  // Add methods to access AI reference data
-  Map<String, double> getReferenceAngles() {
-    final Map<String, double> angles = {};
+  // Get feedback for a specific joint based on its current angle
+  String getFeedbackForJoint(PoseJoint joint, double currentAngle) {
+    if (jointAngles == null) return "No reference data available";
 
-    if (aiReferenceData != null && aiReferenceData!['jointAngles'] != null) {
-      final jointAngles =
-          aiReferenceData!['jointAngles'] as Map<String, dynamic>;
-      jointAngles.forEach((key, value) {
-        angles[key] = (value as num).toDouble();
-      });
+    final reference = jointAngles!.firstWhere(
+      (ref) => ref.joint == joint,
+      orElse: () => JointAngleReference(
+        joint: joint,
+        minAngle: 0,
+        maxAngle: 180,
+      ),
+    );
+
+    if (currentAngle < reference.minAngle) {
+      return reference.feedbackTooLow;
+    } else if (currentAngle > reference.maxAngle) {
+      return reference.feedbackTooHigh;
+    } else {
+      return reference.feedbackCorrect;
+    }
+  }
+
+  // Check if the current pose meets all angle requirements
+  bool isCorrectPose(Map<PoseJoint, double> currentAngles) {
+    if (jointAngles == null) return false;
+
+    for (var reference in jointAngles!) {
+      final currentAngle = currentAngles[reference.joint];
+      if (currentAngle == null) continue;
+
+      if (currentAngle < reference.minAngle ||
+          currentAngle > reference.maxAngle) {
+        return false;
+      }
     }
 
-    return angles;
+    return true;
   }
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
+    List<JointAngleReference>? jointAngles;
+    if (json['jointAngles'] != null) {
+      final List<dynamic> anglesList = json['jointAngles'] as List;
+      jointAngles = anglesList
+          .map((angle) =>
+              JointAngleReference.fromJson(angle as Map<String, dynamic>))
+          .toList();
+    }
+
     return Exercise(
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
       imageUrl: json['imageUrl'] as String,
       videoUrl: json['videoUrl'] as String? ?? '',
-      difficulty:
-          json['difficulty'] as int? ?? 1, // Added missing difficulty parameter
+      difficulty: json['difficulty'] as int? ?? 1,
       category: ExerciseCategory.values.firstWhere(
         (e) => e.toString().split('.').last == json['category'],
         orElse: () => ExerciseCategory.rehabilitation,
-      ), // Added missing category parameter
+      ),
       targetMuscles: List<String>.from(json['targetMuscles'] ?? []),
       complexity: ExerciseComplexity.values.firstWhere(
         (e) => e.toString().split('.').last == json['complexity'],
         orElse: () => ExerciseComplexity.beginner,
       ),
-      aiReferenceData: json['aiReferenceData'] as Map<String, dynamic>?,
+      jointAngles: jointAngles,
       defaultPrescription: json['defaultPrescription'] != null
           ? ExercisePrescription.fromJson(
               json['defaultPrescription'] as Map<String, dynamic>)
@@ -88,9 +183,11 @@ class Exercise {
       'description': description,
       'imageUrl': imageUrl,
       'videoUrl': videoUrl,
+      'difficulty': difficulty,
+      'category': category.toString().split('.').last,
       'targetMuscles': targetMuscles,
       'complexity': complexity.toString().split('.').last,
-      'aiReferenceData': aiReferenceData,
+      'jointAngles': jointAngles?.map((angle) => angle.toJson()).toList(),
       'defaultPrescription': defaultPrescription?.toJson(),
     };
   }
@@ -101,11 +198,11 @@ class Exercise {
     String? description,
     String? imageUrl,
     String? videoUrl,
-    int? difficulty, // Added missing parameter
-    ExerciseCategory? category, // Added missing parameter
+    int? difficulty,
+    ExerciseCategory? category,
     List<String>? targetMuscles,
     ExerciseComplexity? complexity,
-    Map<String, dynamic>? aiReferenceData,
+    List<JointAngleReference>? jointAngles,
     ExercisePrescription? defaultPrescription,
   }) {
     return Exercise(
@@ -114,11 +211,11 @@ class Exercise {
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
       videoUrl: videoUrl ?? this.videoUrl,
-      difficulty: difficulty ?? this.difficulty, // Added to constructor
-      category: category ?? this.category, // Added to constructor
+      difficulty: difficulty ?? this.difficulty,
+      category: category ?? this.category,
       targetMuscles: targetMuscles ?? this.targetMuscles,
       complexity: complexity ?? this.complexity,
-      aiReferenceData: aiReferenceData ?? this.aiReferenceData,
+      jointAngles: jointAngles ?? this.jointAngles,
       defaultPrescription: defaultPrescription ?? this.defaultPrescription,
     );
   }
@@ -167,7 +264,16 @@ final List<Exercise> dummyExercises = [
     category: ExerciseCategory.rehabilitation,
     targetMuscles: ['shoulder'],
     complexity: ExerciseComplexity.beginner,
-    aiReferenceData: null,
+    jointAngles: [
+      JointAngleReference(
+        joint: PoseJoint.rightShoulder,
+        minAngle: 150,
+        maxAngle: 170,
+        feedbackTooLow: "Raise your arm higher",
+        feedbackTooHigh: "Lower your arm slightly",
+        feedbackCorrect: "Good shoulder position",
+      ),
+    ],
     defaultPrescription: ExercisePrescription(sets: 3, reps: 10),
   ),
   Exercise(
@@ -180,7 +286,24 @@ final List<Exercise> dummyExercises = [
     category: ExerciseCategory.rehabilitation,
     targetMuscles: ['knee'],
     complexity: ExerciseComplexity.beginner,
-    aiReferenceData: null,
+    jointAngles: [
+      JointAngleReference(
+        joint: PoseJoint.rightKnee,
+        minAngle: 165,
+        maxAngle: 175,
+        feedbackTooLow: "Extend your knee more",
+        feedbackTooHigh: "Don't hyperextend your knee",
+        feedbackCorrect: "Good knee extension",
+      ),
+      JointAngleReference(
+        joint: PoseJoint.rightHip,
+        minAngle: 85,
+        maxAngle: 95,
+        feedbackTooLow: "Keep your back straighter",
+        feedbackTooHigh: "Don't lean too far back",
+        feedbackCorrect: "Good sitting posture",
+      ),
+    ],
     defaultPrescription: ExercisePrescription(sets: 3, reps: 10),
   ),
 ];
