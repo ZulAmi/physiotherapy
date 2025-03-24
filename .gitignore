@@ -46,6 +46,10 @@ app.*.map.json
 
 # Python/ML related
 ml/venv/
+mp_env/
+llama-env/
+**/.env/
+**/venv/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -115,3 +119,9 @@ firebase-debug.*.log*
 # Data collection
 flutter_data/
 labeled_data/
+
+# Python virtual environments
+**/Scripts/
+**/Lib/
+**/Include/
+**/pyvenv.cfg

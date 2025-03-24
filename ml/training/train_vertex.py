@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 from google.cloud import storage, aiplatform
 from google.cloud.storage import Blob
-from google.cloud import videointelligence_v1 as videointelligence  # Add this import
+from google.cloud import videointelligence_v1 as videointelligence 
 
 # Import from local modules
 import sys
@@ -66,9 +66,13 @@ class PhysioFlowMLPipeline:
             )
         
         # Initialize Vertex AI
-        aiplatform.init(project=project_id, location=region)
+        aiplatform.init(
+            project=project_id, 
+            location=region,
+            staging_bucket=f"gs://{self.bucket_name}"  # Add staging bucket
+)
     
-    def collect_videos(self, search_term="knee physiotherapy exercises", max_videos=10):
+    def collect_videos(self, search_term="knee injury ACL tear physiotherapy exercise", max_videos=5):
         """Collect videos using video_collector module"""
         print(f"Collecting videos for: {search_term}")
         
@@ -367,8 +371,8 @@ training:
             f"--output-dir=gs://{self.bucket_name}/models"
         ]
         
-        # Create custom container for training
-        custom_container_image = "gcr.io/cloud-aiplatform/training/tf-gpu.2-12:latest"
+        # Use correct Vertex AI container image
+        custom_container_image = "us-docker.pkg.dev/vertex-ai/training/tf-gpu.2-12:latest"
         
         # Create Python package
         package_path = self._package_training_code()
@@ -401,6 +405,7 @@ training:
             job = aiplatform.CustomJob(
                 display_name=job_name,
                 worker_pool_specs=worker_pool_specs,
+                staging_bucket=f"gs://{self.bucket_name}"
             )
             
             print(f"Starting Vertex AI training job: {job_name}")
