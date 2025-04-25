@@ -30,7 +30,8 @@ class QuickActionsCard extends StatelessWidget {
                 _QuickActionButton(
                   icon: Icons.assignment,
                   label: 'Assign Exercise',
-                  color: AppTheme.secondaryColor,
+                  color: Colors
+                      .orange, // Replace with appropriate color from AppTheme if available
                   onTap: () {},
                 ),
                 _QuickActionButton(
