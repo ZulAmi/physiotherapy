@@ -5,6 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
 import '../../exercises/models/knee_exercise_type.dart';
+import '../../pose/services/pose_service.dart';
+import '../../llm/services/llama_service.dart';
 
 class DataCollectionScreen extends StatefulWidget {
   const DataCollectionScreen({super.key});
@@ -27,6 +29,10 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
   KneeExerciseType _selectedExerciseType = KneeExerciseType.squat;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+
+  // Initialize services
+  final poseService = PoseService();
+  final llamaService = LlamaService(baseUrl: 'YOUR_LLAMA_API_URL');
 
   @override
   void initState() {
@@ -126,6 +132,19 @@ class _DataCollectionScreenState extends State<DataCollectionScreen> {
     } catch (e) {
       print('Error stopping recording: $e');
     }
+  }
+
+  // After getting an InputImage from camera or gallery:
+  Future<void> analyzeAndGetFeedback(
+      InputImage inputImage, String exerciseName) async {
+    // 1. Extract joint angles using MediaPipe
+    final angles = await poseService.extractKneeAngles(inputImage);
+
+    // 2. Send angles to LlamaService for feedback
+    final feedback = await llamaService.generateFeedback(exerciseName, angles);
+
+    // 3. Display feedback to the user (replace with your UI logic)
+    print('AI Feedback: $feedback');
   }
 
   @override

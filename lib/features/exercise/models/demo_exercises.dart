@@ -10,7 +10,7 @@ class DemoExercise {
       imageUrl: 'assets/images/exercises/shoulder_flexion.png',
       videoUrl: 'assets/videos/shoulder_flexion.mp4',
       difficulty: 2, // Added required difficulty parameter
-      category: ExerciseCategory.upper,
+      category: ExerciseCategory.upperBody,
       targetMuscles: ['Deltoid', 'Rotator Cuff'],
       complexity: ExerciseComplexity.beginner,
       aiReferenceData: {
