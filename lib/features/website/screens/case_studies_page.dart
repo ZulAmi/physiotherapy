@@ -300,18 +300,16 @@ class _CaseStudiesPageState extends State<CaseStudiesPage> {
             ),
           ),
           const SizedBox(height: 32),
-          ...filteredCaseStudies
-              .map((study) => _buildCaseStudyCard(
-                    title: study['title'] as String,
-                    category: study['category'] as String,
-                    challenge: study['challenge'] as String,
-                    solution: study['solution'] as String,
-                    results: Map<String, String>.from(
-                        study['results'] as Map<dynamic, dynamic>),
-                    quote: study['quote'] as String,
-                    quoteAuthor: study['quoteAuthor'] as String,
-                  ))
-              .toList(),
+          ...filteredCaseStudies.map((study) => _buildCaseStudyCard(
+                title: study['title'] as String,
+                category: study['category'] as String,
+                challenge: study['challenge'] as String,
+                solution: study['solution'] as String,
+                results: Map<String, String>.from(
+                    study['results'] as Map<dynamic, dynamic>),
+                quote: study['quote'] as String,
+                quoteAuthor: study['quoteAuthor'] as String,
+              )),
           if (filteredCaseStudies.isEmpty)
             Center(
               child: Padding(

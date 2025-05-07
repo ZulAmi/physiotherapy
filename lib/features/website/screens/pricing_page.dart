@@ -366,31 +366,29 @@ class PricingPage extends StatelessWidget {
           const SizedBox(height: 24),
           const Divider(),
           const SizedBox(height: 24),
-          ...features
-              .map((feature) => Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          color: Color(0xFF2E7D32),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            feature,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF424242),
-                            ),
-                          ),
-                        ),
-                      ],
+          ...features.map((feature) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: Color(0xFF2E7D32),
+                      size: 20,
                     ),
-                  ))
-              .toList(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        feature,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF424242),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
           const SizedBox(height: 32),
           SizedBox(
             width: double.infinity,

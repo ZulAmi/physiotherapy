@@ -8,9 +8,9 @@ class ExerciseMonitoringScreen extends StatefulWidget {
   final Exercise exercise;
 
   const ExerciseMonitoringScreen({
-    Key? key,
+    super.key,
     required this.exercise,
-  }) : super(key: key);
+  });
 
   @override
   _ExerciseMonitoringScreenState createState() =>

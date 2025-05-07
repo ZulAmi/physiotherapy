@@ -291,31 +291,29 @@ class FeaturesPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              ...features
-                  .map((feature) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.check_circle,
-                              color: Color(0xFF2E7D32),
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                feature,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF424242),
-                                ),
-                              ),
-                            ),
-                          ],
+              ...features.map((feature) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.check_circle,
+                          color: Color(0xFF2E7D32),
+                          size: 20,
                         ),
-                      ))
-                  .toList(),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            feature,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xFF424242),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
             ],
           ),
         ),
