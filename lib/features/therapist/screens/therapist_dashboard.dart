@@ -74,7 +74,7 @@ class TherapistDashboard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome, ${user?.displayNameSafe ?? "Therapist"}',
+                    'Welcome, ${user.displayNameSafe}',
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),

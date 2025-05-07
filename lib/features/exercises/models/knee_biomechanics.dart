@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 class KneeBiomechanics {
   // Knee flexion angle (degrees)
   final double flexionAngle;
